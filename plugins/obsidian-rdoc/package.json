@@ -1,0 +1,17 @@
+{
+  "name": "obsidian-rdoc",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Obsidian plugin: export notes to .rdoc",
+  "scripts": {
+    "sync": "node scripts/sync-assets.mjs",
+    "build": "npm run sync && node esbuild.config.mjs production",
+    "dev": "npm run sync && node esbuild.config.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "esbuild": "^0.24.0",
+    "obsidian": "^1.7.2",
+    "typescript": "^5.7.2"
+  }
+}

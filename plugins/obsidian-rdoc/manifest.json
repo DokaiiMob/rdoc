@@ -1,0 +1,10 @@
+{
+  "id": "rdoc-export",
+  "name": "RDOC Export",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "Export the current note to a self-contained .rdoc / .rdoc.html offline document.",
+  "author": "rdoc",
+  "authorUrl": "https://github.com",
+  "isDesktopOnly": false
+}

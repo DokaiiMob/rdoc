@@ -1,0 +1,506 @@
+/* rdoc reader — adaptive offline typography, no external fonts */
+:root {
+  color-scheme: light dark;
+  --bg: #f7f5f1;
+  --bg-elev: #ffffff;
+  --fg: #1a1a1a;
+  --muted: #5c5c5c;
+  --border: #e2ddd4;
+  --accent: #0b6e4f;
+  --accent-soft: #d8efe6;
+  --callout: #fff8e7;
+  --callout-border: #e6c86a;
+  --code-bg: #f0ece4;
+  --shadow: 0 8px 28px rgba(26, 26, 26, 0.12);
+  --measure: 42rem;
+  --pad: clamp(1rem, 4vw, 1.75rem);
+  --fs: 1.0625rem;
+  --lh: 1.7;
+  --radius: 10px;
+  --ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+    monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121416;
+    --bg-elev: #1b1e22;
+    --fg: #ececec;
+    --muted: #a0a6ad;
+    --border: #2c3238;
+    --accent: #5dcea2;
+    --accent-soft: #1a332a;
+    --callout: #2a2618;
+    --callout-border: #8a7430;
+    --code-bg: #23282e;
+    --shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #121416;
+  --bg-elev: #1b1e22;
+  --fg: #ececec;
+  --muted: #a0a6ad;
+  --border: #2c3238;
+  --accent: #5dcea2;
+  --accent-soft: #1a332a;
+  --callout: #2a2618;
+  --callout-border: #8a7430;
+  --code-bg: #23282e;
+  --shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
+}
+
+:root[data-theme="light"] {
+  --bg: #f7f5f1;
+  --bg-elev: #ffffff;
+  --fg: #1a1a1a;
+  --muted: #5c5c5c;
+  --border: #e2ddd4;
+  --accent: #0b6e4f;
+  --accent-soft: #d8efe6;
+  --callout: #fff8e7;
+  --callout-border: #e6c86a;
+  --code-bg: #f0ece4;
+  --shadow: 0 8px 28px rgba(26, 26, 26, 0.12);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--ui);
+  font-size: var(--fs);
+  line-height: var(--lh);
+  color: var(--fg);
+  background: var(--bg);
+  text-rendering: optimizeLegibility;
+}
+
+/* reading progress */
+#rdoc-progress {
+  position: fixed;
+  inset: 0 auto auto 0;
+  height: 3px;
+  width: 0;
+  z-index: 60;
+  background: var(--accent);
+  pointer-events: none;
+}
+
+/* chrome */
+.rdoc-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem var(--pad);
+  background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.rdoc-bar button {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.875rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+  min-height: 2.25rem;
+}
+
+.rdoc-bar button:hover,
+.rdoc-bar button:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.rdoc-bar .spacer {
+  flex: 1;
+}
+
+.rdoc-title-chip {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 40vw;
+}
+
+/* layout */
+.rdoc-shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  max-width: calc(var(--measure) + 16rem);
+  margin: 0 auto;
+}
+
+.rdoc-toc {
+  display: none;
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 50;
+  max-height: min(70vh, 28rem);
+  overflow: auto;
+  padding: 1rem var(--pad) 1.25rem;
+  background: var(--bg-elev);
+  border-top: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  border-radius: 16px 16px 0 0;
+}
+
+.rdoc-toc.open {
+  display: block;
+}
+
+.rdoc-toc h2 {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.rdoc-toc ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rdoc-toc a {
+  display: block;
+  padding: 0.55rem 0.35rem;
+  color: var(--fg);
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.rdoc-toc a:hover,
+.rdoc-toc a[aria-current="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.rdoc-toc .l2 {
+  padding-left: 1rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.rdoc-toc-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.rdoc-toc-backdrop.open {
+  display: block;
+}
+
+@media (min-width: 960px) {
+  .rdoc-shell {
+    grid-template-columns: 14rem minmax(0, var(--measure));
+    gap: 2rem;
+    padding: 0 var(--pad);
+  }
+
+  .rdoc-toc {
+    display: block;
+    position: sticky;
+    top: 3.5rem;
+    inset: auto;
+    max-height: calc(100vh - 4.5rem);
+    align-self: start;
+    margin-top: 1.5rem;
+    padding: 0.5rem 0.25rem;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .rdoc-toc-backdrop,
+  #btn-toc {
+    display: none !important;
+  }
+}
+
+/* article — ~65–75ch measure via rem + padding */
+article#rdoc-content {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 1.5rem var(--pad) 5rem;
+}
+
+article#rdoc-content > *:first-child {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  scroll-margin-top: 4rem;
+}
+
+h1 {
+  font-size: clamp(1.75rem, 5vw, 2.35rem);
+  margin: 0 0 0.75rem;
+}
+
+h2 {
+  font-size: clamp(1.35rem, 3.5vw, 1.65rem);
+  margin: 2.25rem 0 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+h3 {
+  font-size: 1.15rem;
+  margin: 1.75rem 0 0.5rem;
+}
+
+p {
+  margin: 0 0 1.05rem;
+}
+
+a {
+  color: var(--accent);
+}
+
+img,
+svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.25rem auto;
+}
+
+figure {
+  margin: 1.5rem 0;
+}
+
+figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+blockquote {
+  margin: 1.25rem 0;
+  padding: 0.25rem 0 0.25rem 1rem;
+  border-left: 3px solid var(--accent);
+  color: var(--muted);
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+pre {
+  overflow-x: auto;
+  padding: 1rem;
+  margin: 1.25rem 0;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  -webkit-overflow-scrolling: touch;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+  background: var(--code-bg);
+  padding: 0.12em 0.35em;
+  border-radius: 4px;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  font-size: 0.95rem;
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+th,
+td {
+  border: 1px solid var(--border);
+  padding: 0.55rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: var(--accent-soft);
+}
+
+.rdoc-callout {
+  margin: 1.35rem 0;
+  padding: 1rem 1.1rem;
+  background: var(--callout);
+  border: 1px solid var(--callout-border);
+  border-radius: var(--radius);
+}
+
+.rdoc-callout > strong:first-child {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--fg);
+}
+
+.rdoc-formula {
+  margin: 1.5rem auto;
+  text-align: center;
+  overflow-x: auto;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+/* footnotes as large tappable refs + popover */
+.rdoc-fn-ref {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.6rem;
+  min-height: 1.6rem;
+  margin: 0 0.1rem;
+  padding: 0 0.35rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  vertical-align: super;
+  cursor: pointer;
+}
+
+.rdoc-fn-ref:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.rdoc-fn-pop {
+  position: fixed;
+  z-index: 70;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: 1rem;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 1rem 1.1rem;
+  background: var(--bg-elev);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.rdoc-fn-pop[hidden] {
+  display: none;
+}
+
+.rdoc-fn-pop header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rdoc-fn-pop button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.rdoc-meta {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media print {
+  :root {
+    --bg: #fff;
+    --fg: #000;
+    --muted: #333;
+    --border: #ccc;
+    --accent: #000;
+    --code-bg: #f5f5f5;
+  }
+
+  #rdoc-progress,
+  .rdoc-bar,
+  .rdoc-toc,
+  .rdoc-toc-backdrop,
+  .rdoc-fn-pop {
+    display: none !important;
+  }
+
+  article#rdoc-content {
+    max-width: none;
+    padding: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  pre,
+  table {
+    break-inside: avoid;
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "rdoc",
+  "version": "0.1.0",
+  "description": "CLI and compiler for .rdoc — self-contained responsive offline documents",
+  "type": "module",
+  "bin": {
+    "rdoc": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc && node scripts/copy-assets.mjs",
+    "build:obsidian": "npm run build --prefix plugins/obsidian-rdoc",
+    "dev": "tsc --watch",
+    "rdoc": "node dist/cli.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "rdoc",
+    "responsive-document",
+    "markdown",
+    "offline",
+    "ebook"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.1.0",
+    "marked": "^14.1.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "typescript": "^5.7.2"
+  }
+}

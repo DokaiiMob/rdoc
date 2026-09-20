@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.rdoc
+*.rdoc.html
+sample.md
+.DS_Store
+*.log
+plugins/obsidian-rdoc/node_modules/
+plugins/obsidian-rdoc/src/assets.ts

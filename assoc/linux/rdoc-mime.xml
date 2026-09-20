@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/vnd.rdoc+html">
+    <comment>Responsive Document</comment>
+    <comment xml:lang="ru">Адаптивный документ RDOC</comment>
+    <glob pattern="*.rdoc"/>
+    <sub-class-of type="text/html"/>
+  </mime-type>
+</mime-info>
