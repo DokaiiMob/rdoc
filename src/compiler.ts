@@ -128,13 +128,18 @@ ${css}
 <body>
 <div id="rdoc-progress" class="rdoc-chrome" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Прогресс чтения"></div>
 <header class="rdoc-bar rdoc-chrome">
-  <button type="button" id="btn-toc" aria-controls="rdoc-toc">☰ Оглавление</button>
+  <button type="button" id="btn-toc" aria-controls="rdoc-toc">☰ TOC</button>
   <span class="rdoc-title-chip">${escapeHtml(manifest.title)}</span>
   <span class="spacer"></span>
-  <button type="button" id="btn-fs-dn" title="Уменьшить шрифт">A−</button>
-  <button type="button" id="btn-fs-up" title="Увеличить шрифт">A+</button>
-  <button type="button" id="btn-theme" title="Тема">Тема</button>
-  <button type="button" id="btn-print" title="Печать / PDF">PDF</button>
+  <button type="button" id="btn-fs-dn" title="Smaller font">A−</button>
+  <button type="button" id="btn-fs-up" title="Larger font">A+</button>
+  <button type="button" id="btn-serif" title="Serif reading font">Serif</button>
+  <button type="button" id="btn-theme" title="Theme">Theme</button>
+  <button type="button" id="btn-copy" title="Copy plain text">Copy</button>
+  <button type="button" id="btn-cite" title="Copy citation">Cite</button>
+  <button type="button" id="btn-print-preset" title="Print page size">A4</button>
+  <button type="button" id="btn-more" title="More options" aria-haspopup="true">⋯</button>
+  <button type="button" id="btn-print" title="Print / PDF">PDF</button>
 </header>
 <div class="rdoc-toc-backdrop rdoc-chrome" id="rdoc-toc-backdrop"></div>
 <div class="rdoc-shell">
@@ -216,6 +221,7 @@ ${bodyHtml}`;
     canonicalUrl: options.canonicalUrl || undefined,
     license: options.license || undefined,
     rights: options.rights || undefined,
+    themeAccent: options.themeAccent || undefined,
   };
 
   const { css, js } = await loadTemplateAssets();

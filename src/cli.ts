@@ -34,6 +34,7 @@ async function runBuild(
     license: opts.license as string | undefined,
     rights: opts.rights as string | undefined,
     created: opts.created as string | undefined,
+    themeAccent: opts.themeAccent as string | undefined,
   });
 
   const buildOpts: BuildOptions = {
@@ -48,6 +49,7 @@ async function runBuild(
     license: merged.license,
     rights: merged.rights,
     created: merged.created as string | undefined,
+    themeAccent: merged.themeAccent,
   };
 
   const result = await buildRdoc(buildOpts);
@@ -73,6 +75,7 @@ program
   .option("--canonical-url <url>", "Canonical web twin URL")
   .option("--license <spdx>", "SPDX license id")
   .option("--rights <text>", "Rights notice")
+  .option("--theme-accent <color>", "CSS accent color (manifest themeAccent)")
   .option("--created <iso>", "Fixed created timestamp (or set SOURCE_DATE_EPOCH)")
   .option("-w, --watch", "Rebuild on input changes")
   .action(async (input: string, opts) => {

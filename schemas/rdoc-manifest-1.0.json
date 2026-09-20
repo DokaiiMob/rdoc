@@ -78,6 +78,10 @@
     "rights": {
       "type": "string",
       "description": "Optional free-form rights / copyright statement."
+    },
+    "themeAccent": {
+      "type": "string",
+      "description": "Optional CSS color for reader accent (e.g. \"#0b6e4f\"); sets --accent."
     }
   }
 }

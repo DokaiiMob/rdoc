@@ -11,7 +11,7 @@ const css = readFileSync(path.join(template, "reader.css"), "utf8");
 const js = readFileSync(path.join(template, "runtime.js"), "utf8");
 
 const body = `/* Auto-generated from src/template — do not edit by hand */
-export const RDOC_VERSION = "1.0.0";
+export const RDOC_VERSION = "1.1.0";
 export const READER_CSS: string = ${JSON.stringify(css)};
 export const READER_JS: string = ${JSON.stringify(js)};
 `;

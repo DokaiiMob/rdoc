@@ -26,6 +26,8 @@ export interface RdocManifest {
   license?: string;
   /** Free-text rights notice. */
   rights?: string;
+  /** Optional CSS accent color (e.g. `#0b6e4f`); sets `--accent` in the reader. */
+  themeAccent?: string;
   /**
    * Forward compatibility: readers MUST ignore unknown fields
    * (additional properties allowed at parse time).
@@ -46,6 +48,8 @@ export interface BuildOptions {
   rights?: string;
   /** ISO-8601 or SOURCE_DATE_EPOCH override for reproducible builds. */
   created?: string;
+  /** Optional CSS accent color embedded in the manifest. */
+  themeAccent?: string;
 }
 
 export interface InspectResult {
@@ -67,6 +71,7 @@ export interface RdocConfig {
   license?: string;
   rights?: string;
   themeDefault?: "system" | "light" | "dark";
+  themeAccent?: string;
   output?: string;
 }
 

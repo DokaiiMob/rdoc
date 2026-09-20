@@ -19,6 +19,8 @@
   --radius: 10px;
   --ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto,
     "Helvetica Neue", Arial, sans-serif;
+  --serif: Georgia, "Charter", "Iowan Old Style", "Times New Roman", Times,
+    serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
     monospace;
 }
@@ -88,6 +90,19 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+html[data-font="serif"] body,
+html[data-font="serif"] article#rdoc-content {
+  font-family: var(--serif);
+}
+
+html[data-font="serif"] .rdoc-bar,
+html[data-font="serif"] .rdoc-toc,
+html[data-font="serif"] .rdoc-overlay,
+html[data-font="serif"] .rdoc-more,
+html[data-font="serif"] .rdoc-fn-pop {
+  font-family: var(--ui);
+}
+
 /* reading progress */
 #rdoc-progress {
   position: fixed;
@@ -105,12 +120,14 @@ body {
   top: 0;
   z-index: 40;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   padding: 0.55rem var(--pad);
   background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .rdoc-bar button {
@@ -119,21 +136,28 @@ body {
   background: var(--bg-elev);
   color: var(--fg);
   font: inherit;
-  font-size: 0.875rem;
-  padding: 0.4rem 0.7rem;
+  font-size: 0.8125rem;
+  padding: 0.35rem 0.55rem;
   border-radius: 8px;
   cursor: pointer;
-  min-height: 2.25rem;
+  min-height: 2.1rem;
 }
 
 .rdoc-bar button:hover,
-.rdoc-bar button:focus-visible {
+.rdoc-bar button:focus-visible,
+.rdoc-bar button[aria-pressed="true"] {
   border-color: var(--accent);
   outline: none;
 }
 
+.rdoc-bar button[aria-pressed="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
 .rdoc-bar .spacer {
   flex: 1;
+  min-width: 0.5rem;
 }
 
 .rdoc-title-chip {
@@ -142,7 +166,58 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 40vw;
+  max-width: 28vw;
+}
+
+/* zen / focus mode */
+html[data-zen="1"] .rdoc-chrome {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+html[data-zen="1"] .rdoc-bar {
+  transform: translateY(-100%);
+}
+
+html[data-zen="1"].rdoc-zen-reveal .rdoc-chrome {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+html[data-zen="1"].rdoc-zen-reveal .rdoc-bar {
+  transform: none;
+}
+
+html[data-zen="1"] .rdoc-toc:not(.open),
+html[data-zen="1"] .rdoc-toc-backdrop:not(.open) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+html[data-zen="1"] #rdoc-progress {
+  opacity: 1;
+  pointer-events: none;
+}
+
+.rdoc-zen-edge {
+  position: fixed;
+  z-index: 55;
+  pointer-events: none;
+}
+
+html[data-zen="1"] .rdoc-zen-edge {
+  pointer-events: auto;
+}
+
+.rdoc-zen-edge-top {
+  inset: 0 0 auto 0;
+  height: 28px;
+}
+
+.rdoc-zen-edge-bottom {
+  inset: auto 0 0 0;
+  height: 28px;
 }
 
 /* layout */
@@ -299,6 +374,10 @@ svg {
   margin: 1.25rem auto;
 }
 
+article#rdoc-content img {
+  cursor: zoom-in;
+}
+
 figure {
   margin: 1.5rem 0;
 }
@@ -368,6 +447,83 @@ td {
 
 th {
   background: var(--accent-soft);
+}
+
+/* sticky first column (default on narrow + explicit mode) */
+@media (max-width: 720px) {
+  html:not([data-table-mode="cards"]) article#rdoc-content table th:first-child,
+  html:not([data-table-mode="cards"]) article#rdoc-content table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--bg-elev);
+    box-shadow: 2px 0 0 var(--border);
+  }
+
+  html:not([data-table-mode="cards"]) article#rdoc-content table th:first-child {
+    background: var(--accent-soft);
+  }
+}
+
+html[data-table-mode="sticky"] article#rdoc-content table th:first-child,
+html[data-table-mode="sticky"] article#rdoc-content table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--bg-elev);
+  box-shadow: 2px 0 0 var(--border);
+}
+
+html[data-table-mode="sticky"] article#rdoc-content table th:first-child {
+  background: var(--accent-soft);
+}
+
+@media (max-width: 720px) {
+  html[data-table-mode="cards"] article#rdoc-content table,
+  html[data-table-mode="cards"] article#rdoc-content thead,
+  html[data-table-mode="cards"] article#rdoc-content tbody,
+  html[data-table-mode="cards"] article#rdoc-content th,
+  html[data-table-mode="cards"] article#rdoc-content td,
+  html[data-table-mode="cards"] article#rdoc-content tr {
+    display: block;
+  }
+
+  html[data-table-mode="cards"] article#rdoc-content thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  html[data-table-mode="cards"] article#rdoc-content tr {
+    margin: 0 0 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elev);
+    overflow: hidden;
+  }
+
+  html[data-table-mode="cards"] article#rdoc-content td {
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    padding: 0.65rem 0.85rem;
+  }
+
+  html[data-table-mode="cards"] article#rdoc-content td:last-child {
+    border-bottom: 0;
+  }
+
+  html[data-table-mode="cards"] article#rdoc-content td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.2rem;
+  }
 }
 
 .rdoc-callout {
@@ -471,6 +627,212 @@ hr {
   font-size: 0.9rem;
 }
 
+/* reading ruler */
+.rdoc-ruler {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 1.35em;
+  z-index: 30;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent);
+  transform: translateY(-50%);
+  display: none;
+}
+
+html[data-ruler="1"] .rdoc-ruler {
+  display: block;
+}
+
+/* overlays: find, help, more, lightbox */
+.rdoc-overlay {
+  position: fixed;
+  z-index: 80;
+  background: var(--bg-elev);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 0.85rem 1rem;
+}
+
+.rdoc-overlay[hidden] {
+  display: none;
+}
+
+.rdoc-find {
+  top: 3.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(28rem, calc(100% - 2 * var(--pad)));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.rdoc-find input {
+  flex: 1 1 10rem;
+  min-width: 0;
+  font: inherit;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.rdoc-find button {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.8125rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.rdoc-find .rdoc-find-count {
+  font-size: 0.8rem;
+  color: var(--muted);
+  min-width: 4rem;
+}
+
+mark.rdoc-hl {
+  background: color-mix(in srgb, var(--accent) 35%, #ffe066);
+  color: inherit;
+  padding: 0 0.05em;
+  border-radius: 2px;
+}
+
+mark.rdoc-hl.rdoc-hl-cur {
+  outline: 2px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 45%, #ffd24d);
+}
+
+.rdoc-help,
+.rdoc-more {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(24rem, calc(100% - 2 * var(--pad)));
+  max-height: min(80vh, 32rem);
+  overflow: auto;
+}
+
+.rdoc-help h2,
+.rdoc-more h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.rdoc-help dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 0.85rem;
+  font-size: 0.9rem;
+}
+
+.rdoc-help dt {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+
+.rdoc-help dd {
+  margin: 0;
+  color: var(--muted);
+}
+
+.rdoc-more .rdoc-more-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.rdoc-more button {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.8125rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.rdoc-more button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.rdoc-backdrop-ui {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 75;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.rdoc-backdrop-ui.open {
+  display: block;
+}
+
+.rdoc-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--pad);
+  background: rgba(0, 0, 0, 0.82);
+  cursor: zoom-out;
+}
+
+.rdoc-lightbox[hidden] {
+  display: none;
+}
+
+.rdoc-lightbox img {
+  max-width: min(96vw, 1200px);
+  max-height: 92vh;
+  margin: 0;
+  cursor: default;
+  box-shadow: var(--shadow);
+}
+
+.rdoc-toast {
+  position: fixed;
+  z-index: 95;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.5rem 0.9rem;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+.rdoc-toast[hidden] {
+  display: none;
+}
+
+/* print presets — density via data-print-preset; @page size set by runtime */
+@page {
+  margin: 1.2cm;
+}
+
 @media print {
   :root {
     --bg: #fff;
@@ -481,14 +843,31 @@ hr {
     --code-bg: #f5f5f5;
   }
 
-  /* Hide all reader chrome — never bleed into PDF / paper */
+  html[data-print-preset="a4"],
+  html[data-print-preset="letter"] {
+    --fs: 11pt;
+    --lh: 1.45;
+  }
+
+  html[data-print-preset="compact"] {
+    --fs: 9.5pt;
+    --lh: 1.35;
+  }
+
   .rdoc-chrome,
   #rdoc-progress,
   .rdoc-bar,
   .rdoc-toc,
   .rdoc-toc-backdrop,
   .rdoc-fn-pop,
-  .rdoc-shell > nav {
+  .rdoc-shell > nav,
+  .rdoc-overlay,
+  .rdoc-backdrop-ui,
+  .rdoc-lightbox,
+  .rdoc-ruler,
+  .rdoc-zen-edge,
+  .rdoc-toast,
+  mark.rdoc-hl {
     display: none !important;
   }
 
@@ -517,5 +896,14 @@ hr {
   .rdoc-callout,
   figure {
     break-inside: avoid;
+  }
+
+  html[data-print-preset="compact"] h2 {
+    margin-top: 1rem;
+    padding-top: 0.25rem;
+  }
+
+  html[data-print-preset="compact"] p {
+    margin-bottom: 0.65rem;
   }
 }

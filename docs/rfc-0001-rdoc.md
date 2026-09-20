@@ -111,7 +111,8 @@ so untrusted documents cannot fetch the network when opened.
   "profile": "article",
   "canonicalUrl": "https://example.org/docs/guide",
   "license": "MIT",
-  "rights": "© 2026 Example Org. All rights reserved."
+  "rights": "© 2026 Example Org. All rights reserved.",
+  "themeAccent": "#0b6e4f"
 }
 ```
 
@@ -133,6 +134,7 @@ Extended example: [examples/manifest-extended.json](./examples/manifest-extended
 | `canonicalUrl` | no | Absolute URI of the canonical publication location |
 | `license` | no | SPDX license identifier string (e.g. `"MIT"`, `"CC-BY-4.0"`) |
 | `rights` | no | Free-text rights / copyright notice |
+| `themeAccent` | no | CSS color for reader `--accent` (e.g. `#0b6e4f`, `rgb(…)`, or a named color); MUST NOT affect `contentHash` |
 
 ### 6.2 Version negotiation
 
@@ -140,7 +142,7 @@ Extended example: [examples/manifest-extended.json](./examples/manifest-extended
 2. Readers MUST ignore unknown manifest fields (forward compatibility). Producers MAY add vendor-prefixed or experimental keys; ignoring unknowns is mandatory, not advisory.
 3. Readers MUST accept documents whose `version` has a higher MINOR or PATCH than the reader implements, provided required 1.x fields are present and valid.
 4. Readers MAY refuse documents whose MAJOR version is greater than the reader supports.
-5. Optional fields introduced in 1.1.0 (`profile`, `canonicalUrl`, `license`, `rights`) MUST NOT affect `contentHash` computation.
+5. Optional fields introduced in 1.1.0 (`profile`, `canonicalUrl`, `license`, `rights`, `themeAccent`) MUST NOT affect `contentHash` computation.
 
 ## 7. Integrity (contentHash)
 
@@ -170,10 +172,14 @@ Reference chrome MAY provide:
 - Table of contents from `h2`/`h3`
 - Reading progress indicator
 - Font size adjustment (persisted locally)
-- Light / dark / system theme
+- Light / dark / system theme; optional serif reading stack (system fonts only)
+- Optional zen / focus mode, in-document find, scroll restore per `contentHash`
+- Keyboard map (TOC, font, theme, help); print presets; copy text / citation
+- Offline TTS via `speechSynthesis` when available
 - Print stylesheet and a control that invokes `window.print()` (PDF via OS dialog)
+- Optional `themeAccent` applied as CSS `--accent`
 
-Runtime SHOULD stay small (reference target: ≤ 10 KiB of JS before gzip).
+Runtime SHOULD stay small (reference target: prefer ≤ ~20 KiB of JS before gzip; progressive enhancement only).
 
 ## 10. Security considerations
 

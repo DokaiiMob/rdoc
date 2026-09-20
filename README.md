@@ -15,7 +15,7 @@
 
 [Live Demo](https://dokaiimob.github.io/rdoc/) · [Open Sample](https://dokaiimob.github.io/rdoc/demo.rdoc.html) · [RFC](docs/rfc-0001-rdoc.md) · [Roadmap](ROADMAP.md) · [Issues](https://github.com/DokaiiMob/rdoc/issues)
 
-[Русский](README.ru.md) · Docs language: **English is canonical** — see [README policy](docs/README-POLICY.md).
+[Contributing](CONTRIBUTING.md) · [Code of Conduct](CODE_OF_CONDUCT.md) · [Русский](README.ru.md) · Docs language: **English is canonical** — see [README policy](docs/README-POLICY.md).
 
 <br/>
 
@@ -147,13 +147,12 @@ node dist/cli.js build article.md -o article.rdoc.html \
 ## 📖 Reader features
 
 - Comfortable measure (~**65–75** characters)
-- System font stack only (SF / Segoe UI / Roboto / Inter — **no Google Fonts**)
-- Light / dark / system theme
-- Collapsible **TOC** (bottom sheet on mobile, sidebar on desktop)
-- Reading **progress** bar
-- Font size **A− / A+**
-- Footnote **popovers** (no jump-to-footer)
-- **Print → PDF** via `window.print()` with chrome stripped
+- System font stacks only (sans + optional **serif** — **no Google Fonts**)
+- Light / dark / system theme; optional manifest `themeAccent`
+- Collapsible **TOC**, progress bar, font size, zen mode, keyboard map (`?`)
+- In-doc find (`Ctrl/Cmd+F`), scroll restore, reading ruler, offline TTS
+- Footnote popovers, image lightbox, mobile table modes
+- Copy text / citation; print presets (A4 / Letter / compact) → PDF
 
 ---
 
@@ -295,6 +294,8 @@ rdoc/
 
 We love PRs that shrink the chicken-and-egg problem for open document formats.
 
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for build, conformance, and PR tips
+- Everyone is expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md)
 - Read [ROADMAP.md](ROADMAP.md) and pick a **good first issue**
 - Keep the format **offline-first** and **browser-openable**
 - Match [RFC 0001](docs/rfc-0001-rdoc.md) for hashing, CSP, and structure

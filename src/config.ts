@@ -40,6 +40,7 @@ export function mergeBuildOptions<T extends Record<string, unknown>>(
     canonicalUrl: config.canonicalUrl,
     license: config.license,
     rights: config.rights,
+    themeAccent: config.themeAccent,
     ...Object.fromEntries(
       Object.entries(opts).filter(([, v]) => v !== undefined && v !== null),
     ),

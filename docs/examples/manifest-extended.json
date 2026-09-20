@@ -12,5 +12,6 @@
   "profile": "article",
   "canonicalUrl": "https://example.org/docs/rdoc-intro",
   "license": "MIT",
-  "rights": "© 2026 Example Org. Freely redistributable under MIT."
+  "rights": "© 2026 Example Org. Freely redistributable under MIT.",
+  "themeAccent": "#0b6e4f"
 }

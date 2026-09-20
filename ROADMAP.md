@@ -51,7 +51,7 @@ Contributions welcome — start with [good first issues](https://github.com/Doka
 - [x] Canonical hashing: Unicode **NFC** + newlines → **LF**
 - [x] Restrictive **CSP** meta on every document
 - [x] Article HTML sanitize (`script` / `iframe` / inline handlers)
-- [x] Adaptive reader CSS + &lt;10KB vanilla runtime (TOC, progress, theme, font, footnotes, print)
+- [x] Adaptive reader CSS + compact vanilla runtime (TOC, theme, serif, zen, find, TTS, lightbox, print presets, …)
 - [x] Print isolation (`.rdoc-chrome` hidden in `@media print`)
 - [x] OS association helpers (Windows / Linux / macOS)
 - [x] Obsidian export plugin (vault images → base64)
@@ -83,7 +83,7 @@ Contributions welcome — start with [good first issues](https://github.com/Doka
 - [ ] Posts: r/ObsidianMD, r/markdown, r/selfhosted, Lobsters
 - [ ] Long-form article (dev.to / Hashnode): architecture of the polyglot + CSP + hash
 - [ ] Short “PDF vs .rdoc” phone video / GIF for social
-- [ ] Add `CONTRIBUTING.md` + Code of Conduct
+- [x] Add `CONTRIBUTING.md` + Code of Conduct
 
 ### Product gaps
 
@@ -148,18 +148,18 @@ Contributions welcome — start with [good first issues](https://github.com/Doka
 
 ## Reader UX
 
-- [ ] Optional **serif** reading theme (still system fonts)
-- [ ] Focus / “zen” mode (hide chrome until hover)
-- [ ] Keyboard map: `t` TOC, `+`/`-` font, `d` theme, `?` help
-- [ ] Remember scroll position per `contentHash` in `localStorage`
-- [ ] Text search overlay (`Ctrl/Cmd+F` enhancement for long docs)
-- [ ] Reading ruler / line highlight (accessibility preference)
-- [ ] Offline TTS hook (browser Speech Synthesis, no network)
-- [ ] Better table UX on mobile (column priority / card stack option)
-- [ ] Image lightbox (still no network; pure CSS/JS)
-- [ ] Custom accent color via manifest `themeAccent` (CSS variable)
-- [ ] “Copy plain text” / “Copy citation” buttons
-- [ ] Print stylesheet presets: A4 / Letter / compact
+- [x] Optional **serif** reading theme (still system fonts)
+- [x] Focus / “zen” mode (hide chrome until hover)
+- [x] Keyboard map: `t` TOC, `+`/`-` font, `d` theme, `?` help
+- [x] Remember scroll position per `contentHash` in `localStorage`
+- [x] Text search overlay (`Ctrl/Cmd+F` enhancement for long docs)
+- [x] Reading ruler / line highlight (accessibility preference)
+- [x] Offline TTS hook (browser Speech Synthesis, no network)
+- [x] Better table UX on mobile (column priority / card stack option)
+- [x] Image lightbox (still no network; pure CSS/JS)
+- [x] Custom accent color via manifest `themeAccent` (CSS variable)
+- [x] “Copy plain text” / “Copy citation” buttons
+- [x] Print stylesheet presets: A4 / Letter / compact
 
 ---
 
