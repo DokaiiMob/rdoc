@@ -1,0 +1,44 @@
+{
+  "version": "0.3.0",
+  "description": "Desktop reader for bare .rdoc offline documents (Electron)",
+  "homepage": "https://github.com/DokaiiMob/rdoc",
+  "license": "MIT",
+  "url": "https://github.com/DokaiiMob/rdoc/releases/download/v0.3.0/rdoc-reader-0.3.0-win-x64-portable.exe",
+  "hash": "sha256:REPLACE_WITH_RELEASE_ARTIFACT_HASH",
+  "bin": [
+    [
+      "rdoc-reader-0.3.0-win-x64-portable.exe",
+      "rdoc-reader"
+    ]
+  ],
+  "shortcuts": [
+    [
+      "rdoc-reader-0.3.0-win-x64-portable.exe",
+      "rdoc Reader"
+    ]
+  ],
+  "checkver": {
+    "github": "https://github.com/DokaiiMob/rdoc"
+  },
+  "autoupdate": {
+    "url": "https://github.com/DokaiiMob/rdoc/releases/download/v$version/rdoc-reader-$version-win-x64-portable.exe",
+    "bin": [
+      [
+        "rdoc-reader-$version-win-x64-portable.exe",
+        "rdoc-reader"
+      ]
+    ],
+    "shortcuts": [
+      [
+        "rdoc-reader-$version-win-x64-portable.exe",
+        "rdoc Reader"
+      ]
+    ]
+  },
+  "notes": [
+    "Stub Scoop manifest for the desktop reader portable EXE from GitHub Releases.",
+    "Replace hash after each release (see packaging/README.md).",
+    "NSIS installer assets (rdoc-reader-*-win-x64-setup.exe) are not used by this portable manifest.",
+    "Binaries are currently unsigned (Authenticode deferred)."
+  ]
+}

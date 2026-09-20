@@ -208,10 +208,10 @@ Browser remains the canonical reader. Native shells exist so **bare `.rdoc`** op
 
 ### Distribution
 
-- [ ] winget / Scoop / Homebrew casks for the **reader** (CLI packaging already stubbed)
-- [ ] F-Droid recipe (reproducible debug→release path)
-- [ ] GitHub Releases automation: tagged builds for Windows portable, macOS, Linux, Android APK/AAB
-- [ ] Checksums + SBOM notes on each reader asset
+- [x] winget / Scoop / Homebrew casks for the **reader** (stubs under [`packaging/`](packaging/); CLI packaging already stubbed)
+- [x] F-Droid recipe sketch (reproducible debug→release path) — [`packaging/fdroid/`](packaging/fdroid/); upstream MR still TODO
+- [x] GitHub Releases automation: tagged builds for Windows portable, macOS, Linux, Android APK/AAB — [`.github/workflows/release-readers.yml`](.github/workflows/release-readers.yml)
+- [x] Checksums + SBOM notes on each reader asset — workflow `SHA256SUMS` + [`docs/SBOM-READERS.md`](docs/SBOM-READERS.md)
 
 ---
 

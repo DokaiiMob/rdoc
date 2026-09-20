@@ -12,7 +12,9 @@
     "pack:nsis": "electron-builder --win nsis --x64",
     "pack:msi": "electron-builder --win msi --x64",
     "pack:dir": "electron-builder --win dir --x64",
-    "pack:all": "electron-builder --win portable nsis msi --x64"
+    "pack:all": "electron-builder --win portable nsis msi --x64",
+    "pack:mac": "electron-builder --mac dmg zip --x64 --arm64",
+    "pack:linux": "electron-builder --linux AppImage deb --x64"
   },
   "build": {
     "appId": "com.rdoc.desktop-reader",
@@ -99,6 +101,40 @@
     },
     "portable": {
       "artifactName": "rdoc-reader-${version}-win-x64-portable.${ext}"
+    },
+    "mac": {
+      "icon": "icon.png",
+      "category": "public.app-category.productivity",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "artifactName": "rdoc-reader-${version}-mac-${arch}.${ext}",
+      "identity": null
+    },
+    "dmg": {
+      "artifactName": "rdoc-reader-${version}-mac-${arch}.${ext}"
+    },
+    "linux": {
+      "icon": "icon.png",
+      "category": "Office",
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        },
+        {
+          "target": "deb",
+          "arch": ["x64"]
+        }
+      ],
+      "artifactName": "rdoc-reader-${version}-linux-${arch}.${ext}"
     }
   },
   "devDependencies": {

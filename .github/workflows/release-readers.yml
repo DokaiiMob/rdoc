@@ -1,0 +1,360 @@
+# Build native readers and attach assets to the GitHub Release for the pushed tag.
+# Triggers: v* (e.g. v0.3.1) or reader-v* (e.g. reader-v0.3.1)
+#
+# Code signing is optional:
+#   - Windows/macOS: unsigned by default (CSC_IDENTITY_AUTO_DISCOVERY=false)
+#   - Android: signed release/AAB only when ANDROID_KEYSTORE_* secrets exist;
+#     otherwise unsigned release APK, falling back to debug APK.
+#
+# One platform failure does not cancel siblings (fail-fast: false + continue-on-error).
+# Publish still runs and uploads whatever artifacts succeeded.
+
+name: Release readers
+
+on:
+  push:
+    tags:
+      - "v*"
+      - "reader-v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to rebuild/publish (e.g. v0.3.0)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  CSC_IDENTITY_AUTO_DISCOVERY: "false"
+  ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: "true"
+
+jobs:
+  desktop-windows:
+    name: Desktop Windows
+    runs-on: windows-latest
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: apps/desktop-reader
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/desktop-reader/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build portable + NSIS
+        run: npx electron-builder --win portable nsis --x64
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Stage artifacts
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "${{ github.workspace }}/release-assets" | Out-Null
+          Get-ChildItem dist-pack -File | Where-Object {
+            $_.Extension -in '.exe','.msi' -and $_.Name -notmatch 'blockmap'
+          } | ForEach-Object {
+            Copy-Item $_.FullName "${{ github.workspace }}/release-assets/"
+          }
+          Get-ChildItem "${{ github.workspace }}/release-assets" | Format-Table Name, Length
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-windows
+          path: release-assets/*
+          if-no-files-found: warn
+
+  desktop-macos:
+    name: Desktop macOS
+    runs-on: macos-latest
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: apps/desktop-reader
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/desktop-reader/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build dmg + zip
+        run: npx electron-builder --mac dmg zip --x64 --arm64
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Unsigned; identity null in package.json — avoid keychain prompts
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+      - name: Stage artifacts
+        run: |
+          mkdir -p "${{ github.workspace }}/release-assets"
+          find dist-pack -maxdepth 1 -type f \( -name '*.dmg' -o -name '*.zip' \) ! -name '*blockmap*' -exec cp {} "${{ github.workspace }}/release-assets/" \;
+          ls -la "${{ github.workspace }}/release-assets" || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-macos
+          path: release-assets/*
+          if-no-files-found: warn
+
+  desktop-linux:
+    name: Desktop Linux
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: apps/desktop-reader
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/desktop-reader/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build AppImage + deb
+        run: npx electron-builder --linux AppImage deb --x64
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Stage artifacts
+        run: |
+          mkdir -p "${{ github.workspace }}/release-assets"
+          find dist-pack -maxdepth 1 -type f \( -name '*.AppImage' -o -name '*.deb' \) -exec cp {} "${{ github.workspace }}/release-assets/" \;
+          ls -la "${{ github.workspace }}/release-assets" || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-linux
+          path: release-assets/*
+          if-no-files-found: warn
+
+  android:
+    name: Android APK / AAB
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: apps/android-reader
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Accept licenses / ensure platforms
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0" >/dev/null
+
+      - name: Prepare local.properties
+        run: echo "sdk.dir=$ANDROID_HOME" > local.properties
+
+      - name: Decode keystore (optional)
+        id: keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "${ANDROID_KEYSTORE_BASE64:-}" ]; then
+            echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/rdoc-upload.jks"
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "No ANDROID_KEYSTORE_BASE64 secret — will ship unsigned release or debug APK."
+          fi
+
+      - name: Assemble signed release + optional AAB
+        if: steps.keystore.outputs.present == 'true'
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          STORE="$RUNNER_TEMP/rdoc-upload.jks"
+          ./gradlew --no-daemon assembleRelease bundleRelease \
+            -Pandroid.injected.signing.store.file="$STORE" \
+            -Pandroid.injected.signing.store.password="$ANDROID_KEYSTORE_PASSWORD" \
+            -Pandroid.injected.signing.key.alias="$ANDROID_KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$ANDROID_KEY_PASSWORD"
+
+      - name: Assemble unsigned release (fallback debug)
+        if: steps.keystore.outputs.present != 'true'
+        run: |
+          set +e
+          ./gradlew --no-daemon assembleRelease
+          status=$?
+          set -e
+          if [ "$status" -ne 0 ]; then
+            echo "assembleRelease failed; falling back to assembleDebug"
+            ./gradlew --no-daemon assembleDebug
+          fi
+
+      - name: Stage APK / AAB
+        run: |
+          mkdir -p "${{ github.workspace }}/release-assets"
+          # Prefer release outputs; include debug if that is what we built
+          shopt -s nullglob
+          for f in \
+            app/build/outputs/apk/release/*.apk \
+            app/build/outputs/apk/debug/*.apk \
+            app/build/outputs/bundle/release/*.aab
+          do
+            base=$(basename "$f")
+            # Normalize names for the release
+            case "$base" in
+              app-release-unsigned.apk)
+                cp "$f" "${{ github.workspace }}/release-assets/rdoc-reader-android-release-unsigned.apk"
+                ;;
+              app-release.apk)
+                cp "$f" "${{ github.workspace }}/release-assets/rdoc-reader-android-release.apk"
+                ;;
+              app-debug.apk)
+                cp "$f" "${{ github.workspace }}/release-assets/rdoc-reader-android-debug.apk"
+                ;;
+              *.aab)
+                cp "$f" "${{ github.workspace }}/release-assets/rdoc-reader-android-release.aab"
+                ;;
+              *)
+                cp "$f" "${{ github.workspace }}/release-assets/rdoc-reader-android-$base"
+                ;;
+            esac
+          done
+          ls -la "${{ github.workspace }}/release-assets" || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: release-assets/*
+          if-no-files-found: warn
+
+  publish:
+    name: Checksums, SBOM, GitHub Release
+    needs: [desktop-windows, desktop-macos, desktop-linux, android]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve release tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.tag }}" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Publishing assets for tag: $TAG"
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: collected
+          merge-multiple: false
+
+      - name: Flatten assets
+        id: assets
+        run: |
+          mkdir -p release-assets
+          if [ -d collected ]; then
+            find collected -type f -exec cp {} release-assets/ \;
+          fi
+          count=$(find release-assets -type f | wc -l)
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "Artifact file count: $count"
+          ls -la release-assets || true
+          if [ "$count" -eq 0 ]; then
+            echo "::warning::No reader artifacts were produced; release will only get notes/checksums placeholder."
+          fi
+
+      - name: Generate SHA256SUMS (+ per-file .sha256)
+        working-directory: release-assets
+        run: |
+          if [ -z "$(ls -A . 2>/dev/null)" ]; then
+            echo "# No binary artifacts for this run" > SHA256SUMS
+            exit 0
+          fi
+          sha256sum * > SHA256SUMS.tmp
+          # Exclude the sums file itself if re-run
+          grep -v ' SHA256SUMS$' SHA256SUMS.tmp > SHA256SUMS || mv SHA256SUMS.tmp SHA256SUMS
+          rm -f SHA256SUMS.tmp
+          while read -r hash name; do
+            [ -f "$name" ] || continue
+            echo "$hash  $name" > "${name}.sha256"
+          done < SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Optional SBOM via syft
+        continue-on-error: true
+        run: |
+          set +e
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /tmp/syft-bin
+          SYFT=/tmp/syft-bin/syft
+          if [ ! -x "$SYFT" ]; then
+            echo "syft install failed — see docs/SBOM-READERS.md for manual SBOM"
+            exit 0
+          fi
+          mkdir -p sbom-out
+          # Desktop lockfile-oriented SBOM (source tree)
+          if [ -f apps/desktop-reader/package-lock.json ]; then
+            "$SYFT" apps/desktop-reader -o cyclonedx-json=sbom-out/sbom-desktop-reader.cyclonedx.json || true
+            "$SYFT" apps/desktop-reader -o spdx-json=sbom-out/sbom-desktop-reader.spdx.json || true
+          fi
+          # APK SBOMs if present
+          for apk in release-assets/*.apk; do
+            [ -f "$apk" ] || continue
+            base=$(basename "$apk" .apk)
+            "$SYFT" "$apk" -o cyclonedx-json="sbom-out/sbom-${base}.cyclonedx.json" || true
+          done
+          if ls sbom-out/sbom-* 1>/dev/null 2>&1; then
+            cp sbom-out/sbom-* release-assets/
+            echo "Attached SBOM files:"
+            ls -la release-assets/sbom-* || true
+          else
+            echo "No SBOM files generated; document manual process in docs/SBOM-READERS.md"
+          fi
+
+      - name: Publish GitHub Release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: Readers ${{ steps.tag.outputs.tag }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          fail_on_unmatched_files: false
+          body: |
+            Native reader builds for this tag (unsigned unless store/signing secrets were configured).
+
+            - **Windows:** portable + NSIS (`rdoc-reader-*-win-*`)
+            - **macOS:** dmg/zip when the macOS job succeeded
+            - **Linux:** AppImage/deb when the Linux job succeeded
+            - **Android:** release APK/AAB if keystore secrets present; else unsigned release or debug APK
+
+            Verify downloads with `SHA256SUMS`. SBOM notes: `docs/SBOM-READERS.md`. Packaging stubs: `packaging/`.
+          files: |
+            release-assets/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

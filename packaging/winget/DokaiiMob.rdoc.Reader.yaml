@@ -1,0 +1,48 @@
+# Winget manifest stub for rdoc Reader (desktop)
+# Package identifier: DokaiiMob.rdoc.Reader
+# Replace InstallerUrl / InstallerSha256 when GitHub Release assets exist.
+# Prefer the portable EXE for a simple portable installer entry; add an NSIS
+# installer row when submitting upstream (InstallerType: nullsoft).
+# Full winget submissions usually split into version + installer + locale YAMLs;
+# this is a single-file sketch for maintainers.
+
+PackageIdentifier: DokaiiMob.rdoc.Reader
+PackageVersion: 0.3.0
+PackageLocale: en-US
+Publisher: DokaiiMob
+PublisherUrl: https://github.com/DokaiiMob
+PublisherSupportUrl: https://github.com/DokaiiMob/rdoc/issues
+Author: DokaiiMob
+PackageName: rdoc Reader
+PackageUrl: https://github.com/DokaiiMob/rdoc
+License: MIT
+LicenseUrl: https://github.com/DokaiiMob/rdoc/blob/main/LICENSE
+ShortDescription: Desktop reader for bare .rdoc offline documents
+Description: >
+  Minimal Electron shell that opens bare .rdoc / .rdoc.html files with HTML
+  semantics (custom protocol) without renaming the extension. Complements the
+  browser-first rdoc format; unsigned builds until Authenticode is configured.
+Moniker: rdoc-reader
+Tags:
+  - markdown
+  - offline
+  - documents
+  - reader
+  - electron
+  - rdoc
+Installers:
+  # Portable EXE from electron-builder (primary Scoop/winget-friendly asset)
+  - Architecture: x64
+    InstallerType: portable
+    InstallerUrl: https://github.com/DokaiiMob/rdoc/releases/download/v0.3.0/rdoc-reader-0.3.0-win-x64-portable.exe
+    InstallerSha256: 0000000000000000000000000000000000000000000000000000000000000000
+    Commands:
+      - rdoc-reader
+  # Optional NSIS installer (file associations + Start Menu) — uncomment / duplicate
+  # when submitting; keep SHA256 in sync with SHA256SUMS from the release.
+  # - Architecture: x64
+  #   InstallerType: nullsoft
+  #   InstallerUrl: https://github.com/DokaiiMob/rdoc/releases/download/v0.3.0/rdoc-reader-0.3.0-win-x64-setup.exe
+  #   InstallerSha256: 0000000000000000000000000000000000000000000000000000000000000000
+ManifestType: singleton
+ManifestVersion: 1.6.0

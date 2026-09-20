@@ -40,17 +40,21 @@ Folders are rejected with a clear message.
 | Auto-update check | Optional GitHub Releases probe — **OFF by default** (Settings) |
 | Protocol | `rdoc://` registered; second-instance focuses + opens path |
 
-## Build Windows installers
+## Build installers
 
 ```powershell
 cd apps/desktop-reader
 npm install
-npm run pack          # portable + NSIS
+npm run pack          # Windows: portable + NSIS
 # npm run pack:msi    # MSI (optional; needs WiX on PATH)
 # npm run pack:all    # portable + NSIS + MSI
+# npm run pack:mac    # macOS: dmg + zip (run on macOS)
+# npm run pack:linux  # Linux: AppImage + deb
 ```
 
-Typical output under `dist-pack/`:
+CI: push tag `v*` / `reader-v*` → [`.github/workflows/release-readers.yml`](../../.github/workflows/release-readers.yml). Packaging stubs: [`packaging/`](../../packaging/).
+
+Typical Windows output under `dist-pack/`:
 
 - `rdoc-reader-0.3.0-win-x64-portable.exe` — **portable**
 - `rdoc-reader-0.3.0-win-x64-setup.exe` — **NSIS** (file associations + Start Menu)

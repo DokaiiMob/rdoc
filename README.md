@@ -255,9 +255,12 @@ Open **`.rdoc`** without renaming to `.html` — WebView / Electron loads the fi
 | Reader | Path | Download |
 | --- | --- | --- |
 | Windows (portable + NSIS) | [`apps/desktop-reader/`](apps/desktop-reader/) | [Release v0.3.0](https://github.com/DokaiiMob/rdoc/releases/tag/v0.3.0) (unsigned; Authenticode deferred) |
+| macOS / Linux | same desktop app | Tag `v*` / `reader-v*` → workflow **Release readers** (dmg/zip, AppImage/deb when green) |
 | Android (APK) | [`apps/android-reader/`](apps/android-reader/) | [Release assets](https://github.com/DokaiiMob/rdoc/releases) |
 
 Brand mark: [`apps/shared/branding/`](apps/shared/branding/)
+
+**Distribution stubs:** Scoop / winget / Homebrew for the reader under [`packaging/`](packaging/) — see [`packaging/README.md`](packaging/README.md). F-Droid sketch: [`packaging/fdroid/`](packaging/fdroid/). Checksums / SBOM: [`docs/SBOM-READERS.md`](docs/SBOM-READERS.md). Cut a release by pushing tag `v0.x.y` (or `reader-v0.x.y`).
 
 ---
 
@@ -269,7 +272,8 @@ rdoc/
 │   ├── desktop-reader/   # Electron — bare .rdoc on PC
 │   ├── android-reader/   # Kotlin WebView — bare .rdoc on Android
 │   └── shared/branding/  # logo + icons
-├── docs/                 # GitHub Pages + RFC 0001 / 0002
+├── docs/                 # GitHub Pages + RFC 0001 / 0002 + SBOM-READERS
+├── packaging/            # Scoop / winget / Homebrew / F-Droid stubs
 ├── extensions/
 │   └── save-as-rdoc/     # MV3: Save page as .rdoc
 ├── site/                 # playground sources

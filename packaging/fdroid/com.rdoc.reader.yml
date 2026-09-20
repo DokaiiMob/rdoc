@@ -1,0 +1,81 @@
+# rdoc Android Reader — fdroiddata-style recipe (sketch)
+#
+# Copy into an fdroiddata clone as metadata/com.rdoc.reader.yml and adjust
+# Versions / commit SHAs after each tagged release. Not submitted upstream yet.
+#
+# Build path: monorepo subdirectory apps/android-reader (debug → release).
+# F-Droid re-signs the APK; do not require Play Store keystore secrets here.
+
+Categories:
+  - Reading
+  - Development
+License: MIT
+AuthorName: DokaiiMob
+AuthorEmail: ""
+WebSite: https://github.com/DokaiiMob/rdoc
+SourceCode: https://github.com/DokaiiMob/rdoc
+IssueTracker: https://github.com/DokaiiMob/rdoc/issues
+Changelog: https://github.com/DokaiiMob/rdoc/releases
+
+AutoName: rdoc Reader
+Name: rdoc Reader
+PackageName: com.rdoc.reader
+
+Summary: Open bare .rdoc offline documents in a WebView
+Description: |-
+    Minimal Android reader for the rdoc format — self-contained responsive
+    offline HTML documents with a .rdoc extension.
+
+    Opens local .rdoc / .rdoc.html files as UTF-8 HTML in a WebView without
+    renaming. Supports Open / share intents and a local recent-files list.
+    Does not require a network connection to read documents.
+
+    Browser remains the canonical reader; this app only helps OS "Open with"
+    flows for the bare .rdoc extension.
+
+# Repo uses a monorepo; builds happen in apps/android-reader.
+RepoType: git
+Repo: https://github.com/DokaiiMob/rdoc.git
+
+Builds:
+  - versionName: "0.2.0"
+    versionCode: 2
+    commit: REPLACE_WITH_GIT_TAG_OR_COMMIT
+    subdir: apps/android-reader
+    sudo:
+      - apt-get update || apt-get update
+      - apt-get install -y openjdk-17-jdk-headless
+    gradle:
+      - yes
+    output: app/build/outputs/apk/release/app-release-unsigned.apk
+    # Prefer release (unsigned). F-Droid signs the output.
+    # If release signing blocks the buildserver, fall back to:
+    #   gradle: ["yes"]
+    #   output: app/build/outputs/apk/debug/app-debug.apk
+    # and change PackageName / applicationId handling — debug uses .debug suffix
+    # and is NOT suitable for production F-Droid package id.
+    prebuild:
+      - echo "sdk.dir=$$ANDROID_HOME" > local.properties
+    scandelete:
+      - apps/desktop-reader/node_modules
+      - node_modules
+
+# Bump these when publishing a new Android reader version.
+CurrentVersion: "0.2.0"
+CurrentVersionCode: 2
+
+# Once tags are consistent, prefer:
+# UpdateCheckMode: Tags
+# UpdateCheckData: apps/android-reader/app/build.gradle|versionName\s+"([\d.]+)"|versionCode\s+(\d+)
+UpdateCheckMode: Tags
+UpdateCheckData: apps/android-reader/app/build.gradle|versionName\s+"([\d.]+)"|.|versionCode\s+(\d+)
+
+AutoUpdateMode: Version
+VercodeOperation:
+  - "%c"
+
+# Maintainer notes (not fdroiddata fields — strip before upstream MR if needed):
+# MaintainerNotes: |
+#   Unsigned/debug GitHub APKs are convenience artifacts only.
+#   Real inclusion requires this recipe to build cleanly on the F-Droid buildserver.
+#   Optional ANDROID_KEYSTORE_* secrets are for Play/AAB CI — unused by F-Droid.
