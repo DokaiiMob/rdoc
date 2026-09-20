@@ -217,10 +217,10 @@ Browser remains the canonical reader. Native shells exist so **bare `.rdoc`** op
 
 ## Security & trust
 
-- [ ] **RFC 0002** — Ed25519 signatures over `contentHash` ([#4](https://github.com/DokaiiMob/rdoc/issues/4))
-- [ ] Key discovery: `authorKeys` URL **optional** and never required for reading
-- [ ] Detached signature files (`.rdoc.sig`) for immutable mirrors
-- [ ] CSP report-only debug mode for authors (`rdoc build --csp-report`)
+- [x] **RFC 0002** Draft — Ed25519 signatures over `contentHash` + CLI `keygen` / `sign` / `verify` ([#4](https://github.com/DokaiiMob/rdoc/issues/4)) — community review → Accepted still open
+- [x] Key discovery: optional `authorKeys` URL + `rdoc verify --fetch-keys` (never required for reading)
+- [x] Detached signature files (`.rdoc.sig`) via `rdoc sign --detached`
+- [x] CSP report-only debug mode for authors (`rdoc build --csp-report`)
 - [ ] Hardening guide: opening untrusted `.rdoc` (file:// vs hosted)
 - [ ] Subresource integrity notes if ever hosting reader chrome separately (discouraged)
 - [ ] Fuzz tests for sanitizeArticleHtml
@@ -238,7 +238,8 @@ Browser remains the canonical reader. Native shells exist so **bare `.rdoc`** op
 
 ### Browsers
 
-- [ ] Extension: **Save page as .rdoc** (Readability → compile) ([#3](https://github.com/DokaiiMob/rdoc/issues/3))
+- [x] Extension MVP: **Save page as .rdoc** (extract → polyglot download) ([#3](https://github.com/DokaiiMob/rdoc/issues/3)) — see `extensions/save-as-rdoc/`
+- [ ] Extension: Chrome Web Store / AMO publish + full reader chrome parity
 - [ ] Extension: open `.rdoc` links with correct MIME handling
 - [ ] “Share target” PWA receive share → convert
 

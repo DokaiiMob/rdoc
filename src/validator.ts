@@ -136,10 +136,48 @@ export async function validateRdoc(filePath: string): Promise<ValidateResult> {
       errors.push("canonicalUrl must be an absolute URI");
     }
   }
+  if (m.authorKeys !== undefined) {
+    if (typeof m.authorKeys !== "string") {
+      errors.push("authorKeys must be a string URL when present");
+    } else {
+      try {
+        // eslint-disable-next-line no-new
+        new URL(m.authorKeys);
+      } catch {
+        errors.push("authorKeys must be an absolute URI");
+      }
+    }
+  }
 
   // Unknown fields are OK — version negotiation (warn only in verbose tools).
   if (!m.license && m.profile === "contract") {
     warnings.push("contract profile usually sets license/rights");
+  }
+
+  if (m.signature !== undefined) {
+    const sig = m.signature as {
+      alg?: string;
+      publicKey?: string;
+      sig?: string;
+    };
+    if (!sig || typeof sig !== "object") {
+      errors.push("signature must be an object when present");
+    } else if (sig.alg !== "Ed25519") {
+      errors.push('signature.alg must be "Ed25519"');
+    } else if (!sig.publicKey || !sig.sig) {
+      errors.push("signature requires publicKey and sig");
+    } else {
+      try {
+        const { verifySignature } = await import("./sign.js");
+        if (!verifySignature(String(m.contentHash), sig as import("./types.js").RdocSignature)) {
+          errors.push("signature verification failed (RFC 0002)");
+        }
+      } catch (err) {
+        errors.push(
+          `signature check error: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
+    }
   }
 
   return {

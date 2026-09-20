@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 import { watch as fsWatch } from "node:fs";
 import { createServer } from "node:http";
-import { access, readFile, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { Command } from "commander";
 import { associate, openRdoc } from "./associate.js";
 import { loadRdocConfig, mergeBuildOptions } from "./config.js";
 import { buildRdoc } from "./compiler.js";
 import { DEMO_MARKDOWN } from "./demo.js";
+import { signRdocFile, verifyRdocFile, writeKeyPair } from "./sign.js";
 import type { BuildOptions, RdocProfile } from "./types.js";
 import { RDOC_VERSION } from "./types.js";
 import { inspectRdoc, validateRdoc } from "./validator.js";
@@ -50,6 +51,7 @@ async function runBuild(
     rights: merged.rights,
     created: merged.created as string | undefined,
     themeAccent: merged.themeAccent,
+    cspReport: Boolean(opts.cspReport),
   };
 
   const result = await buildRdoc(buildOpts);
@@ -77,6 +79,10 @@ program
   .option("--rights <text>", "Rights notice")
   .option("--theme-accent <color>", "CSS accent color (manifest themeAccent)")
   .option("--created <iso>", "Fixed created timestamp (or set SOURCE_DATE_EPOCH)")
+  .option(
+    "--csp-report",
+    "Also emit Content-Security-Policy-Report-Only (debug; enforcing CSP unchanged)",
+  )
   .option("-w, --watch", "Rebuild on input changes")
   .action(async (input: string, opts) => {
     try {
@@ -259,6 +265,101 @@ program
         "Associate error:",
         err instanceof Error ? err.message : err,
       );
+      process.exitCode = 1;
+    }
+  });
+
+program
+  .command("keygen")
+  .description("Generate an Ed25519 key pair for rdoc sign (RFC 0002)")
+  .option("-o, --out-dir <dir>", "Output directory", ".")
+  .option("-n, --name <basename>", "File basename", "rdoc")
+  .action(async (opts) => {
+    try {
+      const dir = path.resolve(opts.outDir || ".");
+      await mkdir(dir, { recursive: true });
+      const result = await writeKeyPair(dir, opts.name || "rdoc");
+      console.log(`✓ Private key: ${result.privatePath}`);
+      console.log(`  Public key:  ${result.publicPath}`);
+      console.log(`  keyId:       ${result.keyId}`);
+    } catch (err) {
+      console.error("Keygen error:", err instanceof Error ? err.message : err);
+      process.exitCode = 1;
+    }
+  });
+
+program
+  .command("sign")
+  .description("Embed Ed25519 signature over contentHash (RFC 0002)")
+  .argument("<file>", ".rdoc / .rdoc.html file")
+  .requiredOption("-k, --key <pem>", "Private key PEM (PKCS#8 Ed25519)")
+  .option(
+    "--detached",
+    "Write sidecar <file>.rdoc.sig without modifying the document",
+  )
+  .action(async (file: string, opts) => {
+    try {
+      const pem = await readFile(path.resolve(opts.key), "utf8");
+      const result = await signRdocFile(file, pem, {
+        detached: Boolean(opts.detached),
+      });
+      if (result.detachedPath) {
+        console.log(`✓ Detached signature: ${result.detachedPath}`);
+      } else {
+        console.log(`✓ Signed: ${result.path}`);
+      }
+      console.log(`  hash:   ${result.manifest.contentHash}`);
+      console.log(`  keyId:  ${result.signature.keyId ?? "(none)"}`);
+      console.log(`  alg:    ${result.signature.alg}`);
+    } catch (err) {
+      console.error("Sign error:", err instanceof Error ? err.message : err);
+      process.exitCode = 1;
+    }
+  });
+
+program
+  .command("verify")
+  .description("Verify contentHash and optional Ed25519 signature (RFC 0002)")
+  .argument("<file>", ".rdoc / .rdoc.html file")
+  .option("--allow-unsigned", "Succeed when hash is valid but unsigned")
+  .option(
+    "--sig <file>",
+    "Detached signature path (default: <file>.rdoc.sig if present)",
+  )
+  .option(
+    "--fetch-keys",
+    "Fetch manifest.authorKeys URL to cross-check publicKey (default: off)",
+  )
+  .action(async (file: string, opts) => {
+    try {
+      const result = await verifyRdocFile(file, {
+        allowUnsigned: Boolean(opts.allowUnsigned),
+        detachedPath: opts.sig as string | undefined,
+        fetchKeys: Boolean(opts.fetchKeys),
+      });
+      if (result.ok && result.status === "signed") {
+        console.log(
+          `✓ Signature valid (${result.keyId ?? "no keyId"}, ${result.source})`,
+        );
+        process.exitCode = 0;
+        return;
+      }
+      if (result.ok && result.status === "unsigned") {
+        console.log("✓ Hash valid (unsigned)");
+        process.exitCode = 0;
+        return;
+      }
+      if (!result.ok) {
+        console.error(`✗ Verify failed: ${result.detail}`);
+        process.exitCode =
+          result.status === "hash-fail"
+            ? 2
+            : result.status === "key-mismatch"
+              ? 4
+              : 3;
+      }
+    } catch (err) {
+      console.error("Verify error:", err instanceof Error ? err.message : err);
       process.exitCode = 1;
     }
   });

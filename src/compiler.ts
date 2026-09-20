@@ -5,7 +5,11 @@ import { marked } from "marked";
 import type { BuildOptions, RdocManifest } from "./types.js";
 import { RDOC_VERSION } from "./types.js";
 import { estimateReading, hashArticleContent } from "./validator.js";
-import { RDOC_CSP, sanitizeArticleHtml } from "./normalize.js";
+import {
+  RDOC_CSP,
+  RDOC_CSP_REPORT_ONLY,
+  sanitizeArticleHtml,
+} from "./normalize.js";
 import {
   escapeHtml,
   guessTitle,
@@ -99,9 +103,13 @@ function wrapDocument(opts: {
   articleInner: string;
   css: string;
   js: string;
+  cspReport?: boolean;
 }): string {
-  const { manifest, articleInner, css, js } = opts;
+  const { manifest, articleInner, css, js, cspReport } = opts;
   const manifestJson = JSON.stringify(manifest, null, 2);
+  const cspReportMeta = cspReport
+    ? `\n<meta http-equiv="Content-Security-Policy-Report-Only" content="${RDOC_CSP_REPORT_ONLY}">`
+    : "";
 
   return `<!DOCTYPE html>
 <html lang="${escapeHtml(manifest.lang)}">
@@ -109,7 +117,7 @@ function wrapDocument(opts: {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<meta http-equiv="Content-Security-Policy" content="${RDOC_CSP}">
+<meta http-equiv="Content-Security-Policy" content="${RDOC_CSP}">${cspReportMeta}
 <meta name="generator" content="rdoc ${RDOC_VERSION}">
 <meta name="description" content="${escapeHtml(manifest.description ?? "")}">
 <title>${escapeHtml(manifest.title)}</title>
@@ -230,6 +238,7 @@ ${bodyHtml}`;
     articleInner,
     css,
     js,
+    cspReport: Boolean(options.cspReport),
   });
 
   await writeFile(outputPath, document, "utf8");

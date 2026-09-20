@@ -124,10 +124,14 @@ rdoc --help
 | --- | --- |
 | `rdoc build <in.md> -o <out>` | Markdown → `.rdoc` / `.rdoc.html`, inline local images as `data:` |
 | `rdoc inspect <file>` | Manifest, size, SHA-256, reading time |
+| `rdoc validate <file>` | Strict CI checks (hash, CSP, structure) |
 | `rdoc serve <file> [-p port]` | Local HTTP preview |
 | `rdoc open <file>` | Open in browser (bare `.rdoc` → temp `.html`) |
 | `rdoc associate [--undo]` | Register / remove OS file association |
 | `rdoc init demo` | Write a rich `sample.md` fixture |
+| `rdoc keygen` | Ed25519 key pair for signing (RFC 0002) |
+| `rdoc sign <file> -k <pem>` | Embed signature over `contentHash` |
+| `rdoc verify <file>` | Verify hash + optional signature |
 
 <details>
 <summary><b>Build flags</b></summary>
@@ -158,9 +162,10 @@ node dist/cli.js build article.md -o article.rdoc.html \
 
 ## 🔒 Integrity & security
 
-Aligned with [RFC 0001](docs/rfc-0001-rdoc.md):
+Aligned with [RFC 0001](docs/rfc-0001-rdoc.md) and optional [RFC 0002](docs/rfc-0002-signatures.md) (Draft):
 
 - `contentHash` = SHA-256 after **Unicode NFC** + newline canonicalization to **LF**
+- Optional **Ed25519** signature over `contentHash` (`rdoc keygen` / `sign` / `verify`)
 - Hard **CSP** embedded in every file (`default-src 'none'`, no network exfiltration)
 - Compiler strips `<script>` / `<iframe>` / inline event handlers from article HTML
 - `@media print` hides all `.rdoc-chrome` UI
@@ -218,6 +223,12 @@ Details: [`plugins/obsidian-rdoc/`](plugins/obsidian-rdoc/)
 
 ---
 
+## 🧩 Browser extension (MVP)
+
+Save the current page as offline `.rdoc.html` — load unpacked from [`extensions/save-as-rdoc/`](extensions/save-as-rdoc/).
+
+---
+
 ## 💻 OS file association
 
 ```bash
@@ -258,13 +269,17 @@ rdoc/
 │   ├── desktop-reader/   # Electron — bare .rdoc on PC
 │   ├── android-reader/   # Kotlin WebView — bare .rdoc on Android
 │   └── shared/branding/  # logo + icons
-├── docs/                 # GitHub Pages + RFC 0001
+├── docs/                 # GitHub Pages + RFC 0001 / 0002
+├── extensions/
+│   └── save-as-rdoc/     # MV3: Save page as .rdoc
 ├── site/                 # playground sources
 ├── assoc/                # OS registration scripts
+├── pandoc/               # Lua filter + wrappers
 ├── plugins/obsidian-rdoc/
 ├── src/
 │   ├── cli.ts
 │   ├── compiler.ts
+│   ├── sign.ts           # Ed25519 keygen / sign / verify
 │   ├── normalize.ts      # NFC + LF + CSP + sanitize
 │   ├── md-ext.ts
 │   ├── associate.ts

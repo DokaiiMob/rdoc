@@ -187,7 +187,7 @@ Runtime SHOULD stay small (reference target: prefer ≤ ~20 KiB of JS before gzi
 - Producers SHOULD embed a restrictive Content-Security-Policy meta tag that disables network access (`default-src 'none'`, `connect-src 'none'`) while allowing inline reader CSS/JS and `data:` images.
 - Compilers MUST reject external image/script/style URLs and SHOULD strip `<script>`, `<iframe>`, and inline event handlers from article HTML before packaging.
 - Print stylesheets SHOULD hide all reader chrome (`.rdoc-chrome`) so UI chrome never appears in PDF/paper output.
-- Future revisions MAY add optional detached signatures (e.g. Ed25519 over `contentHash`) — out of scope for 1.0.0 / 1.1.0.
+- Future revisions MAY add optional detached signatures (e.g. Ed25519 over `contentHash`) — see [RFC 0002](./rfc-0002-signatures.md) (Draft).
 - Do not execute arbitrary user Markdown as code beyond HTML produced by a vetted pipeline.
 - Annotation and book-spine sidecars (see §17–§18) are untrusted JSON; readers MUST NOT treat their contents as executable code and MUST ignore unknown fields.
 ## 11. OS file association
@@ -227,16 +227,18 @@ Format history: [CHANGELOG-FORMAT.md](./CHANGELOG-FORMAT.md).
 
 This repository provides:
 
-- TypeScript CLI: `build`, `inspect`, `serve`, `open`, `associate`, `init`
+- TypeScript CLI: `build`, `inspect`, `serve`, `open`, `associate`, `init`, `keygen`, `sign`, `verify`
 - Reader template under `src/template/`
 - Obsidian export plugin under `plugins/obsidian-rdoc/`
+- Browser extension MVP under `extensions/save-as-rdoc/`
+- Signature draft: [RFC 0002](./rfc-0002-signatures.md)
 
 ## 15. Future work
 
-- Optional digital signatures and key IDs in the manifest
 - Richer annotation UX (threaded comments, shared sync) beyond the minimal schema in §17
-- Pandoc writer / reader
-- Browser extension “Save as .rdoc”
+- Detached `.rdoc.sig` files and key discovery (see [RFC 0002](./rfc-0002-signatures.md) future work)
+- Pandoc writer / reader polish beyond the two-step path in `pandoc/`
+- Browser extension store listing (MVP: `extensions/save-as-rdoc/`)
 - Native OS viewers beyond “open in browser”
 
 ## 16. IANA considerations

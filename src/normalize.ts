@@ -24,3 +24,9 @@ export const RDOC_CSP =
   "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; " +
   "style-src 'unsafe-inline'; img-src data: blob:; script-src 'unsafe-inline'; " +
   "connect-src 'none'; font-src 'none'; object-src 'none'; media-src 'none'";
+
+/**
+ * Same policy as {@link RDOC_CSP}, used with Content-Security-Policy-Report-Only
+ * so authors can see console reports without changing production enforcement.
+ */
+export const RDOC_CSP_REPORT_ONLY = RDOC_CSP;

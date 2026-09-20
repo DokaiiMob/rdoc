@@ -4,6 +4,28 @@ export const RDOC_VERSION = "1.1.0";
 /** Optional document profile (RFC 0001). */
 export type RdocProfile = "article" | "slides" | "contract" | "paper";
 
+/** Optional Ed25519 attestation over contentHash (RFC 0002 Draft). */
+export interface RdocSignature {
+  alg: "Ed25519";
+  /** Standard Base64 of the raw 32-byte public key. */
+  publicKey: string;
+  /** Standard Base64 of the 64-byte signature. */
+  sig: string;
+  /** Optional opaque key hint (e.g. truncated SHA-256 of publicKey). */
+  keyId?: string;
+}
+
+/** Detached sidecar file (`.rdoc.sig`) — RFC 0002. */
+export interface RdocDetachedSig {
+  format: "rdoc-sig";
+  version: "1" | string;
+  contentHash: string;
+  alg: "Ed25519";
+  publicKey: string;
+  sig: string;
+  keyId?: string;
+}
+
 export interface RdocManifest {
   format: "rdoc";
   version: string;
@@ -28,6 +50,14 @@ export interface RdocManifest {
   rights?: string;
   /** Optional CSS accent color (e.g. `#0b6e4f`); sets `--accent` in the reader. */
   themeAccent?: string;
+  /** Optional Ed25519 signature over contentHash (RFC 0002). */
+  signature?: RdocSignature;
+  /**
+   * Optional URL of an author key discovery document (RFC 0002).
+   * Readers MUST NOT require network access to open the document;
+   * only authoring / verify tooling may fetch this (e.g. `rdoc verify --fetch-keys`).
+   */
+  authorKeys?: string;
   /**
    * Forward compatibility: readers MUST ignore unknown fields
    * (additional properties allowed at parse time).
@@ -50,6 +80,11 @@ export interface BuildOptions {
   created?: string;
   /** Optional CSS accent color embedded in the manifest. */
   themeAccent?: string;
+  /**
+   * When true, emit dual CSP: enforcing production policy plus
+   * Content-Security-Policy-Report-Only for author debugging.
+   */
+  cspReport?: boolean;
 }
 
 export interface InspectResult {
