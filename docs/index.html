@@ -6,6 +6,11 @@
   <title>rdoc — responsive offline documents</title>
   <meta name="description" content="Open format for self-contained, mobile-first offline documents. Drop Markdown, download .rdoc.html.">
   <meta name="google" content="notranslate">
+  <meta name="theme-color" content="#0B6E4F">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/rdoc-logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icons/rdoc-icon-192.png">
   <link rel="stylesheet" href="./landing.css">
 </head>
 <body>
@@ -13,6 +18,7 @@
     <a class="brand" href="./">rdoc</a>
     <nav>
       <a href="#try">Try</a>
+      <a href="#compare-live">Compare</a>
       <a href="./demo.rdoc.html">Live demo</a>
       <a href="https://github.com/DokaiiMob/rdoc">GitHub</a>
       <a href="https://github.com/DokaiiMob/rdoc/blob/main/docs/rfc-0001-rdoc.md">RFC</a>
@@ -60,17 +66,74 @@
 
     <section class="try" id="try">
       <h2>Try in the browser</h2>
-      <p class="sub">No npm install. Drop a <code>.md</code> file — get a self-contained <code>.rdoc.html</code>.</p>
+      <p class="sub">No npm install. Edit or drop Markdown — get a self-contained <code>.rdoc.html</code>. Share a compressed link, or install this page as a PWA for offline convert.</p>
+
+      <label class="editor-label" for="md-editor">Markdown</label>
+      <textarea id="md-editor" class="md-editor" rows="12" spellcheck="false" aria-label="Markdown source"></textarea>
+
       <div class="drop" id="drop" tabindex="0" role="button" aria-label="Drop Markdown file">
         <span class="drop-icon" aria-hidden="true">↓</span>
         <strong>Drop Markdown here</strong>
         <span>or click to choose a <code>.md</code> file</span>
       </div>
       <input id="file" type="file" accept=".md,text/markdown,text/plain" hidden>
-      <div class="row">
-        <button type="button" class="btn" id="btn-sample">Download sample .rdoc.html</button>
-        <p id="status" class="status" aria-live="polite"></p>
+
+      <div class="row actions">
+        <button type="button" class="btn primary" id="btn-convert">Convert &amp; preview</button>
+        <button type="button" class="btn" id="btn-save">Save .rdoc.html</button>
+        <button type="button" class="btn" id="btn-share">Share link</button>
+        <button type="button" class="btn" id="btn-sample">Download sample</button>
       </div>
+      <p id="status" class="status" aria-live="polite"></p>
+
+      <div id="share-panel" class="share-panel" hidden>
+        <label for="share-url">Share URL (gzip + base64url fragment · max 12&nbsp;KB source)</label>
+        <div class="share-row">
+          <input id="share-url" type="text" readonly>
+          <button type="button" class="btn" id="btn-copy-share">Copy</button>
+        </div>
+        <p class="share-note">The document stays in the URL hash — nothing is uploaded. Large files will not fit; use Save instead.</p>
+      </div>
+    </section>
+
+    <section class="compare-live" id="compare-live">
+      <h2>Side-by-side: PDF vs .rdoc</h2>
+      <p class="sub">
+        Load a real PDF on the left and Markdown or an existing <code>.rdoc.html</code> on the right.
+        Everything stays in your browser — no server upload.
+        Built-in browser PDF viewers vary (Chrome, Firefox, Safari); expect pinch-zoom quirks on phones.
+      </p>
+
+      <div class="dual-toolbar">
+        <div class="dual-actions">
+          <button type="button" class="btn" id="btn-pick-pdf">Choose PDF</button>
+          <button type="button" class="btn ghost" id="btn-pdf-clear">Clear PDF</button>
+          <input id="pdf-file" type="file" accept="application/pdf,.pdf" hidden>
+        </div>
+        <div class="dual-actions">
+          <button type="button" class="btn" id="btn-pick-rdoc">Choose Markdown / .rdoc.html</button>
+          <button type="button" class="btn ghost" id="btn-rdoc-clear">Clear rdoc</button>
+          <input id="rdoc-file" type="file" accept=".md,.html,text/markdown,text/html,text/plain" hidden>
+        </div>
+      </div>
+
+      <div class="dual-panes">
+        <div class="dual-pane">
+          <div class="dual-label">PDF (local blob)</div>
+          <div class="dual-frame-wrap">
+            <p id="pdf-placeholder" class="dual-placeholder">Choose a PDF to preview here</p>
+            <iframe id="pdf-frame" title="PDF preview" hidden></iframe>
+          </div>
+        </div>
+        <div class="dual-pane">
+          <div class="dual-label">.rdoc (generated or uploaded)</div>
+          <div class="dual-frame-wrap">
+            <p id="rdoc-placeholder" class="dual-placeholder">Convert Markdown above, or upload <code>.rdoc.html</code></p>
+            <iframe id="rdoc-frame" title="rdoc preview" hidden></iframe>
+          </div>
+        </div>
+      </div>
+      <p id="dual-status" class="status" aria-live="polite"></p>
     </section>
 
     <section class="phone-cta">
@@ -89,6 +152,7 @@
         <li>Strict CSP — no network exfiltration while reading</li>
         <li>~4.5&nbsp;KB reader runtime: TOC, progress, font size, theme, print</li>
         <li>CLI, OS association, Obsidian export plugin</li>
+        <li>Playground PWA: install from the browser menu for offline convert after first visit</li>
       </ul>
     </section>
   </main>

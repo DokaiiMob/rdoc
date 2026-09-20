@@ -1,5 +1,12 @@
 import * as esbuild from "esbuild";
-import { mkdirSync, writeFileSync, copyFileSync, readFileSync } from "node:fs";
+import {
+  mkdirSync,
+  writeFileSync,
+  copyFileSync,
+  readFileSync,
+  cpSync,
+  existsSync,
+} from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
@@ -9,6 +16,12 @@ const siteSrc = path.join(root, "site");
 const outDir = path.join(root, "docs"); // GitHub Pages only allows / or /docs
 const assets = path.join(outDir, "assets");
 mkdirSync(assets, { recursive: true });
+
+// Ensure PWA icons exist under site/icons
+execFileSync(process.execPath, [path.join(root, "scripts", "gen-site-icons.mjs")], {
+  cwd: root,
+  stdio: "inherit",
+});
 
 await esbuild.build({
   entryPoints: [path.join(siteSrc, "src", "main.ts")],
@@ -26,6 +39,12 @@ await esbuild.build({
 
 copyFileSync(path.join(siteSrc, "index.html"), path.join(outDir, "index.html"));
 copyFileSync(path.join(siteSrc, "landing.css"), path.join(outDir, "landing.css"));
+copyFileSync(path.join(siteSrc, "manifest.webmanifest"), path.join(outDir, "manifest.webmanifest"));
+copyFileSync(path.join(siteSrc, "sw.js"), path.join(outDir, "sw.js"));
+
+const iconsOut = path.join(outDir, "icons");
+mkdirSync(iconsOut, { recursive: true });
+cpSync(path.join(siteSrc, "icons"), iconsOut, { recursive: true });
 
 const sampleMd = path.join(root, "sample.md");
 const demoOut = path.join(outDir, "demo.rdoc.html");
@@ -62,4 +81,8 @@ try {
   );
 }
 
-console.log("GitHub Pages site → docs/ (index, converter, demo, QR)");
+if (!existsSync(path.join(outDir, "sw.js"))) {
+  throw new Error("sw.js missing from docs/ — PWA install will fail");
+}
+
+console.log("GitHub Pages site → docs/ (index, converter, demo, QR, PWA shell)");

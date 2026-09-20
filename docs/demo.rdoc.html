@@ -1,29 +1,31 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; style-src 'unsafe-inline'; img-src data: blob:; script-src 'unsafe-inline'; connect-src 'none'; font-src 'none'; object-src 'none'; media-src 'none'">
-<meta name="generator" content="rdoc 1.0.0">
+<meta name="generator" content="rdoc 1.1.0">
 <meta name="description" content="">
 <title>.rdoc — документ, который не нужно зумить</title>
 <!--
   RDOC — Responsive Document (self-contained polyglot).
   Open in any browser. No network required.
-  Spec: format=rdoc version=1.0.0
+  Spec: format=rdoc version=1.1.0
 -->
 <script type="application/rdoc+json" id="rdoc-manifest">
 {
   "format": "rdoc",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "title": ".rdoc — документ, который не нужно зумить",
   "author": "rdoc",
-  "created": "2026-09-20T10:38:20.756Z",
-  "lang": "ru",
-  "contentHash": "5a459d5adc0e6c5af1a62a39dabf4f9b3ea43853ec40fad8e60ed6b8cf9324b6",
+  "created": "2026-09-20T11:44:04.733Z",
+  "lang": "en",
+  "contentHash": "31cbe3af086ba2801e9c06da4992bf22b7bb46513791b9bac1b3c6fb69d9801f",
   "readingMinutes": 2,
-  "wordCount": 405
+  "wordCount": 429,
+  "profile": "article",
+  "license": "MIT"
 }
 </script>
 <style>
@@ -48,6 +50,8 @@
   --radius: 10px;
   --ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto,
     "Helvetica Neue", Arial, sans-serif;
+  --serif: Georgia, "Charter", "Iowan Old Style", "Times New Roman", Times,
+    serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
     monospace;
 }
@@ -117,6 +121,19 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+html[data-font="serif"] body,
+html[data-font="serif"] article#rdoc-content {
+  font-family: var(--serif);
+}
+
+html[data-font="serif"] .rdoc-bar,
+html[data-font="serif"] .rdoc-toc,
+html[data-font="serif"] .rdoc-overlay,
+html[data-font="serif"] .rdoc-more,
+html[data-font="serif"] .rdoc-fn-pop {
+  font-family: var(--ui);
+}
+
 /* reading progress */
 #rdoc-progress {
   position: fixed;
@@ -134,12 +151,14 @@ body {
   top: 0;
   z-index: 40;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   padding: 0.55rem var(--pad);
   background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .rdoc-bar button {
@@ -148,21 +167,28 @@ body {
   background: var(--bg-elev);
   color: var(--fg);
   font: inherit;
-  font-size: 0.875rem;
-  padding: 0.4rem 0.7rem;
+  font-size: 0.8125rem;
+  padding: 0.35rem 0.55rem;
   border-radius: 8px;
   cursor: pointer;
-  min-height: 2.25rem;
+  min-height: 2.1rem;
 }
 
 .rdoc-bar button:hover,
-.rdoc-bar button:focus-visible {
+.rdoc-bar button:focus-visible,
+.rdoc-bar button[aria-pressed="true"] {
   border-color: var(--accent);
   outline: none;
 }
 
+.rdoc-bar button[aria-pressed="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
 .rdoc-bar .spacer {
   flex: 1;
+  min-width: 0.5rem;
 }
 
 .rdoc-title-chip {
@@ -171,7 +197,58 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 40vw;
+  max-width: 28vw;
+}
+
+/* zen / focus mode */
+html[data-zen="1"] .rdoc-chrome {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+html[data-zen="1"] .rdoc-bar {
+  transform: translateY(-100%);
+}
+
+html[data-zen="1"].rdoc-zen-reveal .rdoc-chrome {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+html[data-zen="1"].rdoc-zen-reveal .rdoc-bar {
+  transform: none;
+}
+
+html[data-zen="1"] .rdoc-toc:not(.open),
+html[data-zen="1"] .rdoc-toc-backdrop:not(.open) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+html[data-zen="1"] #rdoc-progress {
+  opacity: 1;
+  pointer-events: none;
+}
+
+.rdoc-zen-edge {
+  position: fixed;
+  z-index: 55;
+  pointer-events: none;
+}
+
+html[data-zen="1"] .rdoc-zen-edge {
+  pointer-events: auto;
+}
+
+.rdoc-zen-edge-top {
+  inset: 0 0 auto 0;
+  height: 28px;
+}
+
+.rdoc-zen-edge-bottom {
+  inset: auto 0 0 0;
+  height: 28px;
 }
 
 /* layout */
@@ -328,6 +405,10 @@ svg {
   margin: 1.25rem auto;
 }
 
+article#rdoc-content img {
+  cursor: zoom-in;
+}
+
 figure {
   margin: 1.5rem 0;
 }
@@ -397,6 +478,83 @@ td {
 
 th {
   background: var(--accent-soft);
+}
+
+/* sticky first column (default on narrow + explicit mode) */
+@media (max-width: 720px) {
+  html:not([data-table-mode="cards"]) article#rdoc-content table th:first-child,
+  html:not([data-table-mode="cards"]) article#rdoc-content table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--bg-elev);
+    box-shadow: 2px 0 0 var(--border);
+  }
+
+  html:not([data-table-mode="cards"]) article#rdoc-content table th:first-child {
+    background: var(--accent-soft);
+  }
+}
+
+html[data-table-mode="sticky"] article#rdoc-content table th:first-child,
+html[data-table-mode="sticky"] article#rdoc-content table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--bg-elev);
+  box-shadow: 2px 0 0 var(--border);
+}
+
+html[data-table-mode="sticky"] article#rdoc-content table th:first-child {
+  background: var(--accent-soft);
+}
+
+@media (max-width: 720px) {
+  html[data-table-mode="cards"] article#rdoc-content table,
+  html[data-table-mode="cards"] article#rdoc-content thead,
+  html[data-table-mode="cards"] article#rdoc-content tbody,
+  html[data-table-mode="cards"] article#rdoc-content th,
+  html[data-table-mode="cards"] article#rdoc-content td,
+  html[data-table-mode="cards"] article#rdoc-content tr {
+    display: block;
+  }
+
+  html[data-table-mode="cards"] article#rdoc-content thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  html[data-table-mode="cards"] article#rdoc-content tr {
+    margin: 0 0 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elev);
+    overflow: hidden;
+  }
+
+  html[data-table-mode="cards"] article#rdoc-content td {
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    padding: 0.65rem 0.85rem;
+  }
+
+  html[data-table-mode="cards"] article#rdoc-content td:last-child {
+    border-bottom: 0;
+  }
+
+  html[data-table-mode="cards"] article#rdoc-content td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.2rem;
+  }
 }
 
 .rdoc-callout {
@@ -500,6 +658,212 @@ hr {
   font-size: 0.9rem;
 }
 
+/* reading ruler */
+.rdoc-ruler {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 1.35em;
+  z-index: 30;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent);
+  transform: translateY(-50%);
+  display: none;
+}
+
+html[data-ruler="1"] .rdoc-ruler {
+  display: block;
+}
+
+/* overlays: find, help, more, lightbox */
+.rdoc-overlay {
+  position: fixed;
+  z-index: 80;
+  background: var(--bg-elev);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 0.85rem 1rem;
+}
+
+.rdoc-overlay[hidden] {
+  display: none;
+}
+
+.rdoc-find {
+  top: 3.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(28rem, calc(100% - 2 * var(--pad)));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.rdoc-find input {
+  flex: 1 1 10rem;
+  min-width: 0;
+  font: inherit;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.rdoc-find button {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.8125rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.rdoc-find .rdoc-find-count {
+  font-size: 0.8rem;
+  color: var(--muted);
+  min-width: 4rem;
+}
+
+mark.rdoc-hl {
+  background: color-mix(in srgb, var(--accent) 35%, #ffe066);
+  color: inherit;
+  padding: 0 0.05em;
+  border-radius: 2px;
+}
+
+mark.rdoc-hl.rdoc-hl-cur {
+  outline: 2px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 45%, #ffd24d);
+}
+
+.rdoc-help,
+.rdoc-more {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(24rem, calc(100% - 2 * var(--pad)));
+  max-height: min(80vh, 32rem);
+  overflow: auto;
+}
+
+.rdoc-help h2,
+.rdoc-more h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.rdoc-help dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 0.85rem;
+  font-size: 0.9rem;
+}
+
+.rdoc-help dt {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+
+.rdoc-help dd {
+  margin: 0;
+  color: var(--muted);
+}
+
+.rdoc-more .rdoc-more-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.rdoc-more button {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.8125rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.rdoc-more button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.rdoc-backdrop-ui {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 75;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.rdoc-backdrop-ui.open {
+  display: block;
+}
+
+.rdoc-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--pad);
+  background: rgba(0, 0, 0, 0.82);
+  cursor: zoom-out;
+}
+
+.rdoc-lightbox[hidden] {
+  display: none;
+}
+
+.rdoc-lightbox img {
+  max-width: min(96vw, 1200px);
+  max-height: 92vh;
+  margin: 0;
+  cursor: default;
+  box-shadow: var(--shadow);
+}
+
+.rdoc-toast {
+  position: fixed;
+  z-index: 95;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.5rem 0.9rem;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+.rdoc-toast[hidden] {
+  display: none;
+}
+
+/* print presets — density via data-print-preset; @page size set by runtime */
+@page {
+  margin: 1.2cm;
+}
+
 @media print {
   :root {
     --bg: #fff;
@@ -510,14 +874,31 @@ hr {
     --code-bg: #f5f5f5;
   }
 
-  /* Hide all reader chrome — never bleed into PDF / paper */
+  html[data-print-preset="a4"],
+  html[data-print-preset="letter"] {
+    --fs: 11pt;
+    --lh: 1.45;
+  }
+
+  html[data-print-preset="compact"] {
+    --fs: 9.5pt;
+    --lh: 1.35;
+  }
+
   .rdoc-chrome,
   #rdoc-progress,
   .rdoc-bar,
   .rdoc-toc,
   .rdoc-toc-backdrop,
   .rdoc-fn-pop,
-  .rdoc-shell > nav {
+  .rdoc-shell > nav,
+  .rdoc-overlay,
+  .rdoc-backdrop-ui,
+  .rdoc-lightbox,
+  .rdoc-ruler,
+  .rdoc-zen-edge,
+  .rdoc-toast,
+  mark.rdoc-hl {
     display: none !important;
   }
 
@@ -547,6 +928,15 @@ hr {
   figure {
     break-inside: avoid;
   }
+
+  html[data-print-preset="compact"] h2 {
+    margin-top: 1rem;
+    padding-top: 0.25rem;
+  }
+
+  html[data-print-preset="compact"] p {
+    margin-bottom: 0.65rem;
+  }
 }
 
 </style>
@@ -554,13 +944,18 @@ hr {
 <body>
 <div id="rdoc-progress" class="rdoc-chrome" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Прогресс чтения"></div>
 <header class="rdoc-bar rdoc-chrome">
-  <button type="button" id="btn-toc" aria-controls="rdoc-toc">☰ Оглавление</button>
+  <button type="button" id="btn-toc" aria-controls="rdoc-toc">☰ TOC</button>
   <span class="rdoc-title-chip">.rdoc — документ, который не нужно зумить</span>
   <span class="spacer"></span>
-  <button type="button" id="btn-fs-dn" title="Уменьшить шрифт">A−</button>
-  <button type="button" id="btn-fs-up" title="Увеличить шрифт">A+</button>
-  <button type="button" id="btn-theme" title="Тема">Тема</button>
-  <button type="button" id="btn-print" title="Печать / PDF">PDF</button>
+  <button type="button" id="btn-fs-dn" title="Smaller font">A−</button>
+  <button type="button" id="btn-fs-up" title="Larger font">A+</button>
+  <button type="button" id="btn-serif" title="Serif reading font">Serif</button>
+  <button type="button" id="btn-theme" title="Theme">Theme</button>
+  <button type="button" id="btn-copy" title="Copy plain text">Copy</button>
+  <button type="button" id="btn-cite" title="Copy citation">Cite</button>
+  <button type="button" id="btn-print-preset" title="Print page size">A4</button>
+  <button type="button" id="btn-more" title="More options" aria-haspopup="true">⋯</button>
+  <button type="button" id="btn-print" title="Print / PDF">PDF</button>
 </header>
 <div class="rdoc-toc-backdrop rdoc-chrome" id="rdoc-toc-backdrop"></div>
 <div class="rdoc-shell">
@@ -571,7 +966,7 @@ hr {
   <article id="rdoc-content">
 <header class="rdoc-meta">
   <div><strong>.rdoc — документ, который не нужно зумить</strong></div>
-  <div>rdoc · 2026-09-20 · ~2 мин чтения</div>
+  <div>rdoc · 2026-09-20 · ~2 min read</div>
 </header>
 <h1>.rdoc — документ, который не нужно зумить</h1>
 <p><em>Открытый формат адаптивных офлайн-документов</em></p>
@@ -630,7 +1025,7 @@ hr {
 <h2>Типографика и мера строки</h2>
 <p>Основной текст укладывается в комфортную ширину <strong>≈ 65–75 символов</strong>. Размер шрифта можно менять кнопками <strong>A− / A+</strong> в панели; тема переключается кнопкой <strong>Тема</strong>.</p>
 <h3>Сноски без прыжков</h3>
-<p>Классические сноски уводят взгляд в конец страницы. В .rdoc нажатие на маркер открывает <strong>popover</strong>. Попробуйте нажать сюда: <button type="button" class="rdoc-fn-ref" data-fn="1" aria-label="Сноска 1">1</button> и сюда: <button type="button" class="rdoc-fn-ref" data-fn="demo" aria-label="Сноска demo">demo</button>.</p>
+<p>Классические сноски уводят взгляд в конец страницы. В .rdoc нажатие на маркер открывает <strong>popover</strong>. Попробуйте нажать сюда: <sup class="rdoc-fn"><button type="button" class="rdoc-fn-ref" data-fn="1" aria-label="Footnote 1">1</button></sup> и сюда: <sup class="rdoc-fn"><button type="button" class="rdoc-fn-ref" data-fn="demo" aria-label="Footnote demo">2</button></sup>.</p>
 <h2>Формула (встроенный SVG)</h2>
 <p>Формула Эйлера как самодостаточный SVG — без MathJax и сети:</p>
 <div class="rdoc-formula" role="img" aria-label="e^(iπ) + 1 = 0">
@@ -689,6 +1084,13 @@ node dist/cli.js inspect my_article.rdoc.html
 <aside id="fn-1" hidden data-fn-def>Сноска открывается во всплывающей панели внизу экрана — удобно большим пальцем на мобильном.</aside>
 <aside id="fn-demo" hidden data-fn-def>Это вторая сноска. Закройте панель крестиком или клавишей Escape.</aside>
 </div>
+<section class="rdoc-fn-list" aria-label="Footnotes">
+<ol>
+<li id="fn-list-1" value="1">Сноска открывается во всплывающей панели внизу экрана — удобно большим пальцем на мобильном. <a href="#fnref-back-1" class="rdoc-fn-back">↩</a></li>
+<li id="fn-list-demo" value="2">Это вторая сноска. Закройте панель крестиком или клавишей Escape. <a href="#fnref-back-demo" class="rdoc-fn-back">↩</a></li>
+</ol>
+</section>
+
   </article>
 </div>
 <aside class="rdoc-fn-pop rdoc-chrome" id="rdoc-fn-pop" hidden role="dialog" aria-label="Сноска">
@@ -696,7 +1098,7 @@ node dist/cli.js inspect my_article.rdoc.html
   <div id="rdoc-fn-body"></div>
 </aside>
 <script>
-/*! rdoc runtime <10KB — TOC, progress, theme, font, footnotes, print */
+/*! rdoc runtime — TOC, theme, serif, zen, find, TTS, lightbox, print */
 (function () {
   var root = document.documentElement;
   var article = document.getElementById("rdoc-content");
@@ -707,6 +1109,59 @@ node dist/cli.js inspect my_article.rdoc.html
   var pop = document.getElementById("rdoc-fn-pop");
   var popBody = document.getElementById("rdoc-fn-body");
   var fs = parseFloat(localStorage.getItem("rdoc-fs") || "1.0625");
+  var printPresets = ["a4", "letter", "compact"];
+  var printLabels = { a4: "A4", letter: "Letter", compact: "Compact" };
+  var findMarks = [];
+  var findIdx = -1;
+  var toastTimer;
+
+  var manifest = {};
+  try {
+    var mEl = document.getElementById("rdoc-manifest");
+    if (mEl) manifest = JSON.parse(mEl.textContent || "{}");
+  } catch (e) {}
+  var contentHash = manifest.contentHash || "anon";
+  var scrollKey = "rdoc-scroll-" + contentHash;
+
+  function $(id) {
+    return document.getElementById(id);
+  }
+
+  function toast(msg) {
+    var t = $("rdoc-toast");
+    if (!t) {
+      t = document.createElement("div");
+      t.id = "rdoc-toast";
+      t.className = "rdoc-toast rdoc-chrome";
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      t.hidden = true;
+    }, 1600);
+  }
+
+  function safeColor(c) {
+    if (!c || typeof c !== "string") return null;
+    c = c.trim();
+    if (/[;{}]|url\s*\(/i.test(c)) return null;
+    if (/^#[0-9a-fA-F]{3,8}$/.test(c)) return c;
+    if (/^[a-zA-Z]{3,20}$/.test(c)) return c;
+    if (/^rgba?\(\s*[\d.\s%,./]+\)$/.test(c)) return c;
+    if (/^hsla?\(\s*[\d.\s%,./°]+\)$/.test(c)) return c;
+    return null;
+  }
+
+  var accent = safeColor(manifest.themeAccent);
+  if (accent) {
+    root.style.setProperty("--accent", accent);
+    root.style.setProperty(
+      "--accent-soft",
+      "color-mix(in srgb, " + accent + " 22%, var(--bg-elev))",
+    );
+  }
 
   function applyFs() {
     root.style.setProperty("--fs", fs + "rem");
@@ -720,6 +1175,60 @@ node dist/cli.js inspect my_article.rdoc.html
     localStorage.setItem("rdoc-theme", mode);
   }
   setTheme(localStorage.getItem("rdoc-theme") || "system");
+
+  function setSerif(on) {
+    if (on) root.setAttribute("data-font", "serif");
+    else root.removeAttribute("data-font");
+    localStorage.setItem("rdoc-serif", on ? "1" : "0");
+    var b = $("btn-serif");
+    if (b) b.setAttribute("aria-pressed", on ? "true" : "false");
+  }
+  setSerif(localStorage.getItem("rdoc-serif") === "1");
+
+  function setZen(on) {
+    if (on) root.setAttribute("data-zen", "1");
+    else {
+      root.removeAttribute("data-zen");
+      root.classList.remove("rdoc-zen-reveal");
+    }
+    localStorage.setItem("rdoc-zen", on ? "1" : "0");
+    var b = $("btn-zen");
+    if (b) b.setAttribute("aria-pressed", on ? "true" : "false");
+  }
+
+  function setRuler(on) {
+    if (on) root.setAttribute("data-ruler", "1");
+    else root.removeAttribute("data-ruler");
+    localStorage.setItem("rdoc-ruler", on ? "1" : "0");
+    var b = $("btn-ruler");
+    if (b) b.setAttribute("aria-pressed", on ? "true" : "false");
+  }
+
+  function setTableMode(mode) {
+    root.setAttribute("data-table-mode", mode);
+    localStorage.setItem("rdoc-tables", mode);
+    var b = $("btn-tables");
+    if (b) b.setAttribute("aria-pressed", mode === "cards" ? "true" : "false");
+  }
+
+  function applyPrintPreset(p) {
+    if (printPresets.indexOf(p) < 0) p = "a4";
+    root.setAttribute("data-print-preset", p);
+    localStorage.setItem("rdoc-print", p);
+    var btn = $("btn-print-preset");
+    if (btn) btn.textContent = printLabels[p] || p;
+    var st = $("rdoc-print-page");
+    if (!st) {
+      st = document.createElement("style");
+      st.id = "rdoc-print-page";
+      document.head.appendChild(st);
+    }
+    var size = p === "letter" ? "letter" : "A4";
+    var margin =
+      p === "compact" ? "0.8cm" : p === "letter" ? "0.75in" : "1.4cm";
+    st.textContent = "@page{size:" + size + ";margin:" + margin + "}";
+  }
+  applyPrintPreset(localStorage.getItem("rdoc-print") || "a4");
 
   function slugify(text) {
     return text
@@ -746,10 +1255,34 @@ node dist/cli.js inspect my_article.rdoc.html
         (h.textContent || "") +
         "</a></li>";
     }
-    tocList.innerHTML = html || "<li><em>Нет заголовков</em></li>";
+    tocList.innerHTML = html || "<li><em>No headings</em></li>";
   }
   buildToc();
 
+  function prepTables() {
+    if (!article) return;
+    var tables = article.querySelectorAll("table");
+    for (var t = 0; t < tables.length; t++) {
+      var table = tables[t];
+      var headers = [];
+      var ths = table.querySelectorAll("thead th");
+      if (!ths.length) ths = table.querySelectorAll("tr:first-child th, tr:first-child td");
+      for (var i = 0; i < ths.length; i++) headers.push((ths[i].textContent || "").trim());
+      var rows = table.querySelectorAll("tbody tr");
+      if (!rows.length) rows = table.querySelectorAll("tr");
+      for (var r = 0; r < rows.length; r++) {
+        var cells = rows[r].querySelectorAll("td");
+        for (var c = 0; c < cells.length; c++) {
+          if (!cells[c].getAttribute("data-label") && headers[c])
+            cells[c].setAttribute("data-label", headers[c]);
+        }
+      }
+    }
+  }
+  prepTables();
+  setTableMode(localStorage.getItem("rdoc-tables") || "sticky");
+
+  var scrollSaveTimer;
   function onScroll() {
     if (!progress || !article) return;
     var rect = article.getBoundingClientRect();
@@ -757,6 +1290,13 @@ node dist/cli.js inspect my_article.rdoc.html
     var scrolled = Math.min(Math.max(-rect.top, 0), total || 1);
     var pct = total > 0 ? (scrolled / total) * 100 : 100;
     progress.style.width = pct + "%";
+
+    clearTimeout(scrollSaveTimer);
+    scrollSaveTimer = setTimeout(function () {
+      try {
+        localStorage.setItem(scrollKey, String(window.scrollY | 0));
+      } catch (e) {}
+    }, 200);
 
     if (!tocList) return;
     var links = tocList.querySelectorAll("a");
@@ -775,13 +1315,22 @@ node dist/cli.js inspect my_article.rdoc.html
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
+  try {
+    var savedY = parseInt(localStorage.getItem(scrollKey) || "0", 10);
+    if (savedY > 0) {
+      requestAnimationFrame(function () {
+        window.scrollTo(0, savedY);
+      });
+    }
+  } catch (e) {}
+
   function openToc(open) {
     if (!toc || !backdrop) return;
     toc.classList.toggle("open", open);
     backdrop.classList.toggle("open", open);
   }
 
-  document.getElementById("btn-toc")?.addEventListener("click", function () {
+  $("btn-toc")?.addEventListener("click", function () {
     openToc(!toc.classList.contains("open"));
   });
   backdrop?.addEventListener("click", function () {
@@ -791,31 +1340,410 @@ node dist/cli.js inspect my_article.rdoc.html
     if (e.target && e.target.tagName === "A") openToc(false);
   });
 
-  document.getElementById("btn-fs-up")?.addEventListener("click", function () {
-    fs = Math.min(1.5, +(fs + 0.0625).toFixed(4));
+  function bumpFs(dir) {
+    fs = Math.min(1.5, Math.max(0.875, +(fs + dir * 0.0625).toFixed(4)));
     applyFs();
+  }
+  $("btn-fs-up")?.addEventListener("click", function () {
+    bumpFs(1);
   });
-  document.getElementById("btn-fs-dn")?.addEventListener("click", function () {
-    fs = Math.max(0.875, +(fs - 0.0625).toFixed(4));
-    applyFs();
+  $("btn-fs-dn")?.addEventListener("click", function () {
+    bumpFs(-1);
   });
-  document.getElementById("btn-theme")?.addEventListener("click", function () {
+  $("btn-theme")?.addEventListener("click", function () {
     var cur = localStorage.getItem("rdoc-theme") || "system";
-    var next = cur === "system" ? "dark" : cur === "dark" ? "light" : "system";
-    setTheme(next);
+    setTheme(cur === "system" ? "dark" : cur === "dark" ? "light" : "system");
   });
-  document.getElementById("btn-print")?.addEventListener("click", function () {
+  $("btn-serif")?.addEventListener("click", function () {
+    setSerif(root.getAttribute("data-font") !== "serif");
+  });
+  $("btn-print-preset")?.addEventListener("click", function () {
+    var cur = root.getAttribute("data-print-preset") || "a4";
+    var i = printPresets.indexOf(cur);
+    applyPrintPreset(printPresets[(i + 1) % printPresets.length]);
+    toast("Print: " + printLabels[root.getAttribute("data-print-preset")]);
+  });
+  $("btn-print")?.addEventListener("click", function () {
     window.print();
+  });
+
+  function copyText(text, okMsg) {
+    function done() {
+      toast(okMsg || "Copied");
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(function () {
+        fallback();
+      });
+    } else fallback();
+    function fallback() {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand("copy");
+        done();
+      } catch (e) {
+        toast("Copy failed");
+      }
+      document.body.removeChild(ta);
+    }
+  }
+
+  $("btn-copy")?.addEventListener("click", function () {
+    copyText(article ? article.innerText : "", "Plain text copied");
+  });
+  $("btn-cite")?.addEventListener("click", function () {
+    var parts = [
+      manifest.title || document.title,
+      manifest.author,
+      manifest.created ? String(manifest.created).slice(0, 10) : "",
+      manifest.canonicalUrl || "",
+    ].filter(Boolean);
+    copyText(parts.join(". "), "Citation copied");
+  });
+
+  /* UI scaffold: ruler, zen edges, overlays, lightbox */
+  var ruler = document.createElement("div");
+  ruler.className = "rdoc-ruler rdoc-chrome";
+  ruler.setAttribute("aria-hidden", "true");
+  document.body.appendChild(ruler);
+
+  var edgeTop = document.createElement("div");
+  edgeTop.className = "rdoc-zen-edge rdoc-zen-edge-top";
+  var edgeBot = document.createElement("div");
+  edgeBot.className = "rdoc-zen-edge rdoc-zen-edge-bottom";
+  document.body.appendChild(edgeTop);
+  document.body.appendChild(edgeBot);
+
+  function revealZen(on) {
+    root.classList.toggle("rdoc-zen-reveal", !!on);
+  }
+  edgeTop.addEventListener("mouseenter", function () {
+    revealZen(true);
+  });
+  edgeBot.addEventListener("mouseenter", function () {
+    revealZen(true);
+  });
+  document.querySelector(".rdoc-bar")?.addEventListener("mouseleave", function () {
+    if (root.getAttribute("data-zen") === "1") revealZen(false);
+  });
+
+  var uiBackdrop = document.createElement("div");
+  uiBackdrop.className = "rdoc-backdrop-ui rdoc-chrome";
+  uiBackdrop.id = "rdoc-ui-backdrop";
+  document.body.appendChild(uiBackdrop);
+
+  var findBox = document.createElement("div");
+  findBox.className = "rdoc-overlay rdoc-find rdoc-chrome";
+  findBox.id = "rdoc-find";
+  findBox.hidden = true;
+  findBox.innerHTML =
+    '<input type="search" id="rdoc-find-input" placeholder="Find in document…" autocomplete="off">' +
+    '<span class="rdoc-find-count" id="rdoc-find-count"></span>' +
+    '<button type="button" id="rdoc-find-prev" title="Previous">↑</button>' +
+    '<button type="button" id="rdoc-find-next" title="Next">↓</button>' +
+    '<button type="button" id="rdoc-find-close" title="Close">×</button>';
+  document.body.appendChild(findBox);
+
+  var helpBox = document.createElement("div");
+  helpBox.className = "rdoc-overlay rdoc-help rdoc-chrome";
+  helpBox.id = "rdoc-help";
+  helpBox.hidden = true;
+  helpBox.setAttribute("role", "dialog");
+  helpBox.innerHTML =
+    "<h2>Keyboard shortcuts</h2><dl>" +
+    "<dt>t</dt><dd>Toggle table of contents</dd>" +
+    "<dt>+ / =</dt><dd>Larger font</dd>" +
+    "<dt>-</dt><dd>Smaller font</dd>" +
+    "<dt>d</dt><dd>Cycle theme</dd>" +
+    "<dt>s</dt><dd>Toggle serif font</dd>" +
+    "<dt>z</dt><dd>Zen / focus mode</dd>" +
+    "<dt>?</dt><dd>This help</dd>" +
+    "<dt>Ctrl/Cmd+F</dt><dd>Find in document</dd>" +
+    "<dt>Esc</dt><dd>Close overlays / exit zen</dd>" +
+    "</dl><p style=\"margin:.75rem 0 0;font-size:.8rem;color:var(--muted)\">Browser Find (Edit menu) still works.</p>";
+  document.body.appendChild(helpBox);
+
+  var moreBox = document.createElement("div");
+  moreBox.className = "rdoc-overlay rdoc-more rdoc-chrome";
+  moreBox.id = "rdoc-more";
+  moreBox.hidden = true;
+  moreBox.innerHTML =
+    "<h2>Reading options</h2>" +
+    '<div class="rdoc-more-row">' +
+    '<button type="button" id="btn-zen">Zen</button>' +
+    '<button type="button" id="btn-ruler">Ruler</button>' +
+    '<button type="button" id="btn-tables">Table cards</button>' +
+    '<button type="button" id="btn-help">Shortcuts (?)</button>' +
+    "</div>" +
+    '<div class="rdoc-more-row">' +
+    '<button type="button" id="btn-tts">Speak</button>' +
+    '<button type="button" id="btn-tts-stop">Stop TTS</button>' +
+    "</div>";
+  document.body.appendChild(moreBox);
+
+  var lightbox = document.createElement("div");
+  lightbox.className = "rdoc-lightbox rdoc-chrome";
+  lightbox.id = "rdoc-lightbox";
+  lightbox.hidden = true;
+  lightbox.setAttribute("role", "dialog");
+  lightbox.innerHTML = "<img alt=\"\">";
+  document.body.appendChild(lightbox);
+
+  function setUiOpen(which) {
+    var map = { find: findBox, help: helpBox, more: moreBox };
+    for (var k in map) {
+      if (map[k]) map[k].hidden = k !== which;
+    }
+    uiBackdrop.classList.toggle("open", !!which);
+    if (which === "find") {
+      var inp = $("rdoc-find-input");
+      if (inp) setTimeout(function () {
+        inp.focus();
+        inp.select();
+      }, 0);
+    }
+  }
+
+  function closeUi() {
+    setUiOpen(null);
+    clearFind();
+  }
+
+  uiBackdrop.addEventListener("click", closeUi);
+
+  $("btn-more")?.addEventListener("click", function () {
+    if (!moreBox.hidden) closeUi();
+    else setUiOpen("more");
+  });
+  $("btn-help")?.addEventListener("click", function () {
+    setUiOpen("help");
+  });
+
+  setZen(localStorage.getItem("rdoc-zen") === "1");
+  setRuler(localStorage.getItem("rdoc-ruler") === "1");
+
+  $("btn-zen")?.addEventListener("click", function () {
+    setZen(root.getAttribute("data-zen") !== "1");
+  });
+  $("btn-ruler")?.addEventListener("click", function () {
+    setRuler(root.getAttribute("data-ruler") !== "1");
+  });
+  $("btn-tables")?.addEventListener("click", function () {
+    var cur = root.getAttribute("data-table-mode") || "sticky";
+    setTableMode(cur === "cards" ? "sticky" : "cards");
+    toast(cur === "cards" ? "Tables: sticky column" : "Tables: card stack");
+  });
+
+  document.addEventListener(
+    "mousemove",
+    function (e) {
+      if (root.getAttribute("data-ruler") === "1")
+        ruler.style.top = e.clientY + "px";
+      if (root.getAttribute("data-zen") === "1") {
+        if (e.clientY < 40 || e.clientY > window.innerHeight - 40)
+          revealZen(true);
+      }
+    },
+    { passive: true },
+  );
+
+  /* find */
+  function clearFind() {
+    for (var i = 0; i < findMarks.length; i++) {
+      var m = findMarks[i];
+      var p = m.parentNode;
+      if (!p) continue;
+      p.replaceChild(document.createTextNode(m.textContent || ""), m);
+      p.normalize();
+    }
+    findMarks = [];
+    findIdx = -1;
+    var c = $("rdoc-find-count");
+    if (c) c.textContent = "";
+  }
+
+  function highlightFind(q) {
+    clearFind();
+    if (!article || !q) return;
+    var walker = document.createTreeWalker(article, NodeFilter.SHOW_TEXT, null);
+    var nodes = [];
+    while (walker.nextNode()) {
+      var n = walker.currentNode;
+      if (!n.nodeValue || !n.nodeValue.trim()) continue;
+      if (n.parentElement && n.parentElement.closest("script,style")) continue;
+      nodes.push(n);
+    }
+    var lower = q.toLowerCase();
+    for (var i = 0; i < nodes.length; i++) {
+      var node = nodes[i];
+      var text = node.nodeValue;
+      var idx = text.toLowerCase().indexOf(lower);
+      if (idx < 0) continue;
+      var frag = document.createDocumentFragment();
+      var pos = 0;
+      while (idx >= 0) {
+        if (idx > pos) frag.appendChild(document.createTextNode(text.slice(pos, idx)));
+        var mark = document.createElement("mark");
+        mark.className = "rdoc-hl";
+        mark.textContent = text.slice(idx, idx + q.length);
+        frag.appendChild(mark);
+        findMarks.push(mark);
+        pos = idx + q.length;
+        idx = text.toLowerCase().indexOf(lower, pos);
+      }
+      if (pos < text.length)
+        frag.appendChild(document.createTextNode(text.slice(pos)));
+      node.parentNode.replaceChild(frag, node);
+    }
+    var c = $("rdoc-find-count");
+    if (c) c.textContent = findMarks.length ? "1/" + findMarks.length : "0";
+    if (findMarks.length) jumpFind(0);
+  }
+
+  function jumpFind(i) {
+    if (!findMarks.length) return;
+    findIdx = ((i % findMarks.length) + findMarks.length) % findMarks.length;
+    for (var j = 0; j < findMarks.length; j++)
+      findMarks[j].classList.toggle("rdoc-hl-cur", j === findIdx);
+    findMarks[findIdx].scrollIntoView({ block: "center", behavior: "smooth" });
+    var c = $("rdoc-find-count");
+    if (c) c.textContent = findIdx + 1 + "/" + findMarks.length;
+  }
+
+  var findInput = $("rdoc-find-input");
+  var findTimer;
+  findInput?.addEventListener("input", function () {
+    clearTimeout(findTimer);
+    findTimer = setTimeout(function () {
+      highlightFind(findInput.value.trim());
+    }, 120);
+  });
+  $("rdoc-find-next")?.addEventListener("click", function () {
+    jumpFind(findIdx + 1);
+  });
+  $("rdoc-find-prev")?.addEventListener("click", function () {
+    jumpFind(findIdx - 1);
+  });
+  $("rdoc-find-close")?.addEventListener("click", closeUi);
+  findInput?.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      jumpFind(e.shiftKey ? findIdx - 1 : findIdx + 1);
+    }
+  });
+
+  /* TTS */
+  function stopTts() {
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+  }
+  function speakText(text) {
+    if (!window.speechSynthesis || !text) {
+      toast("TTS unavailable");
+      return;
+    }
+    stopTts();
+    var u = new SpeechSynthesisUtterance(text);
+    if (manifest.lang) u.lang = manifest.lang;
+    window.speechSynthesis.speak(u);
+  }
+  $("btn-tts")?.addEventListener("click", function () {
+    var sel = window.getSelection && String(window.getSelection());
+    if (sel && sel.trim()) {
+      speakText(sel.trim());
+      return;
+    }
+    if (!article) return;
+    var h = article.querySelector("h1, h2, h3");
+    var start = h || article;
+    var parts = [];
+    var n = start;
+    while (n && parts.join(" ").length < 4000) {
+      if (n.innerText) parts.push(n.innerText);
+      n = n.nextElementSibling;
+    }
+    speakText(parts.join("\n\n"));
+  });
+  $("btn-tts-stop")?.addEventListener("click", stopTts);
+
+  /* lightbox */
+  function closeLightbox() {
+    lightbox.hidden = true;
+    lightbox.querySelector("img").removeAttribute("src");
+  }
+  article?.addEventListener("click", function (e) {
+    var t = e.target;
+    if (!t || t.tagName !== "IMG") return;
+    e.preventDefault();
+    var img = lightbox.querySelector("img");
+    img.src = t.currentSrc || t.src;
+    img.alt = t.alt || "";
+    lightbox.hidden = false;
+  });
+  lightbox.addEventListener("click", function (e) {
+    if (e.target === lightbox) closeLightbox();
   });
 
   function closeFn() {
     if (pop) pop.hidden = true;
   }
-  document.getElementById("rdoc-fn-close")?.addEventListener("click", closeFn);
+  $("rdoc-fn-close")?.addEventListener("click", closeFn);
+
+  function typingTarget(el) {
+    if (!el) return false;
+    var tag = el.tagName;
+    return (
+      tag === "INPUT" ||
+      tag === "TEXTAREA" ||
+      tag === "SELECT" ||
+      el.isContentEditable
+    );
+  }
+
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") {
       closeFn();
       openToc(false);
+      closeLightbox();
+      closeUi();
+      stopTts();
+      if (root.getAttribute("data-zen") === "1") setZen(false);
+      return;
+    }
+
+    if ((e.ctrlKey || e.metaKey) && (e.key === "f" || e.key === "F")) {
+      e.preventDefault();
+      setUiOpen("find");
+      return;
+    }
+
+    if (typingTarget(e.target) || e.ctrlKey || e.metaKey || e.altKey) return;
+
+    var k = e.key;
+    if (k === "t" || k === "T") {
+      e.preventDefault();
+      openToc(!toc || !toc.classList.contains("open"));
+    } else if (k === "+" || k === "=") {
+      e.preventDefault();
+      bumpFs(1);
+    } else if (k === "-" || k === "_") {
+      e.preventDefault();
+      bumpFs(-1);
+    } else if (k === "d" || k === "D") {
+      e.preventDefault();
+      $("btn-theme")?.click();
+    } else if (k === "s" || k === "S") {
+      e.preventDefault();
+      setSerif(root.getAttribute("data-font") !== "serif");
+    } else if (k === "z" || k === "Z") {
+      e.preventDefault();
+      setZen(root.getAttribute("data-zen") !== "1");
+    } else if (k === "?") {
+      e.preventDefault();
+      if (!helpBox.hidden) closeUi();
+      else setUiOpen("help");
     }
   });
 

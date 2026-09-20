@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="rdoc">
+  <!-- Vector source aligned to forest-green document mark -->
+  <rect x="0" y="0" width="512" height="512" rx="112" ry="112" fill="#F7FFF9"/>
+  <!-- Page body -->
+  <path fill="#0B6E4F" d="M150 88h176c8.8 0 16 7.2 16 16v40c0 22.1 17.9 40 40 40h40c8.8 0 16 7.2 16 16v204c0 26.5-21.5 48-48 48H150c-26.5 0-48-21.5-48-48V136c0-26.5 21.5-48 48-48z"/>
+  <!-- Folded corner (cream negative space) -->
+  <path fill="#F7FFF9" d="M342 88l86 86h-46c-22.1 0-40-17.9-40-40V88z"/>
+  <!-- Soft reflow lines -->
+  <rect x="186" y="248" width="148" height="22" rx="11" fill="#7BC68E"/>
+  <rect x="186" y="292" width="118" height="22" rx="11" fill="#7BC68E"/>
+  <rect x="216" y="336" width="138" height="22" rx="11" fill="#7BC68E"/>
+  <!-- Lowercase r monogram -->
+  <text x="186" y="214" fill="#1A262F" font-family="Georgia, 'Times New Roman', serif" font-size="92" font-weight="700">r</text>
+</svg>
