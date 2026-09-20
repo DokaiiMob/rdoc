@@ -15,6 +15,8 @@
 
 [Live Demo](https://dokaiimob.github.io/rdoc/) · [Open Sample](https://dokaiimob.github.io/rdoc/demo.rdoc.html) · [RFC](docs/rfc-0001-rdoc.md) · [Roadmap](ROADMAP.md) · [Issues](https://github.com/DokaiiMob/rdoc/issues)
 
+[Русский](README.ru.md) · Docs language: **English is canonical** — see [README policy](docs/README-POLICY.md).
+
 <br/>
 
 [![Skills](https://skillicons.dev/icons?i=ts,nodejs,html,css,js,markdown,github,vscode)](https://skillicons.dev)

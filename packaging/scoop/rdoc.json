@@ -1,0 +1,19 @@
+{
+  "version": "0.1.0",
+  "description": "CLI for .rdoc — self-contained responsive offline documents",
+  "homepage": "https://github.com/DokaiiMob/rdoc",
+  "license": "MIT",
+  "url": "https://github.com/DokaiiMob/rdoc/releases/download/v0.1.0/rdoc-windows-x64.zip",
+  "hash": "sha256:REPLACE_WITH_RELEASE_ARTIFACT_HASH",
+  "bin": "rdoc.exe",
+  "checkver": {
+    "github": "https://github.com/DokaiiMob/rdoc"
+  },
+  "autoupdate": {
+    "url": "https://github.com/DokaiiMob/rdoc/releases/download/v$version/rdoc-windows-x64.zip"
+  },
+  "notes": [
+    "Stub Scoop manifest — replace url/hash when Windows release zips are published.",
+    "Until then, install from source: npm install -g rdoc (after npm publish)."
+  ]
+}

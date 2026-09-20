@@ -1,0 +1,16 @@
+{
+  "format": "rdoc",
+  "version": "1.1.0",
+  "title": "Responsive Documents for Offline Reading",
+  "author": "RDOC Editors",
+  "created": "2026-09-20T10:00:00Z",
+  "lang": "en",
+  "contentHash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "readingMinutes": 8,
+  "wordCount": 2100,
+  "description": "Introduction to the .rdoc container format.",
+  "profile": "article",
+  "canonicalUrl": "https://example.org/docs/rdoc-intro",
+  "license": "MIT",
+  "rights": "© 2026 Example Org. Freely redistributable under MIT."
+}

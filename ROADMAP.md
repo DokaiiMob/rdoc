@@ -43,7 +43,7 @@ Contributions welcome — start with [good first issues](https://github.com/Doka
 
 ## Shipped (MVP → public hardening)
 
-- [x] TypeScript CLI: `build`, `inspect`, `serve`, `open`, `associate`, `init demo`
+- [x] TypeScript CLI: `build`, `inspect`, `validate`, `serve`, `open`, `associate`, `init demo|config`
 - [x] Markdown → self-contained HTML polyglot (`marked` + extensions)
 - [x] Local image inlining (`data:`), reject remote images
 - [x] Manifest `application/rdoc+json` + SHA-256 `contentHash`
@@ -54,9 +54,17 @@ Contributions welcome — start with [good first issues](https://github.com/Doka
 - [x] Print isolation (`.rdoc-chrome` hidden in `@media print`)
 - [x] OS association helpers (Windows / Linux / macOS)
 - [x] Obsidian export plugin (vault images → base64)
-- [x] RFC 0001 draft
+- [x] RFC 0001 **Accepted** (format **1.1.0**)
 - [x] GitHub Pages playground (drag-and-drop MD converter + demo + QR)
 - [x] MIT license, public GitHub repo
+- [x] `rdoc build -w` watch mode + `rdoc.config.json`
+- [x] Manifest optional fields: `profile`, `canonicalUrl`, `license`, `rights`
+- [x] JSON Schema `schemas/rdoc-manifest-1.0.json`
+- [x] Conformance suite + GitHub Actions CI
+- [x] Pandoc two-step path (`pandoc/`)
+- [x] Shell completions (bash/zsh/fish/powershell)
+- [x] Docker + Homebrew/Scoop/Winget stubs + publishing notes
+- [x] English canonical README + `README.ru.md` policy
 
 ---
 
@@ -73,11 +81,11 @@ Contributions welcome — start with [good first issues](https://github.com/Doka
 ### Product gaps
 
 - [ ] Publish Obsidian plugin to **Community Plugins** catalog
-- [ ] Deterministic `--created` / `SOURCE_DATE_EPOCH` for reproducible builds ([#2](https://github.com/DokaiiMob/rdoc/issues/2))
-- [ ] Pandoc writer / Lua filter ([#1](https://github.com/DokaiiMob/rdoc/issues/1))
-- [ ] CI: build + `inspect` smoke test on sample fixture
-- [ ] `rdoc validate` alias (strict exit codes for CI)
-- [ ] English + Russian README sync policy (English canonical)
+- [x] Deterministic `--created` / `SOURCE_DATE_EPOCH` for reproducible builds ([#2](https://github.com/DokaiiMob/rdoc/issues/2))
+- [x] Pandoc writer / Lua filter ([#1](https://github.com/DokaiiMob/rdoc/issues/1))
+- [x] CI: build + `inspect`/`validate` smoke test on sample fixture
+- [x] `rdoc validate` alias (strict exit codes for CI)
+- [x] English + Russian README sync policy (English canonical)
 
 ### Playground
 
@@ -89,17 +97,17 @@ Contributions welcome — start with [good first issues](https://github.com/Doka
 
 ## Format & specification
 
-- [ ] **RFC 0001** → `Accepted` after community review window
-- [ ] Formal JSON Schema for the manifest (`schemas/rdoc-manifest-1.0.json`)
-- [ ] Conformance test suite (fixtures: pass/fail hash, CSP present, single article)
-- [ ] Media type IANA notes / `application/vnd.rdoc+html` registration path
-- [ ] Version negotiation: readers ignore unknown manifest fields (document examples)
-- [ ] Optional `rdoc-profile` field: `article` | `slides` | `contract` | `paper`
-- [ ] Sidecar annotation format (highlights) — either embedded JSON or `.rdoc.ann.json`
-- [ ] Multi-article collections / “book” profile (ordered spine of `.rdoc` parts)
-- [ ] `canonicalUrl` optional field (for when a web twin exists)
-- [ ] `license` / `rights` fields in manifest (SPDX)
-- [ ] Changelog of format versions in `docs/CHANGELOG-FORMAT.md`
+- [x] **RFC 0001** → `Accepted` after community review window
+- [x] Formal JSON Schema for the manifest (`schemas/rdoc-manifest-1.0.json`)
+- [x] Conformance test suite (fixtures: pass/fail hash, CSP present, single article)
+- [x] Media type IANA notes / `application/vnd.rdoc+html` registration path
+- [x] Version negotiation: readers ignore unknown manifest fields (document examples)
+- [x] Optional `rdoc-profile` field: `article` | `slides` | `contract` | `paper`
+- [x] Sidecar annotation format (highlights) — either embedded JSON or `.rdoc.ann.json`
+- [x] Multi-article collections / “book” profile (ordered spine of `.rdoc` parts)
+- [x] `canonicalUrl` optional field (for when a web twin exists)
+- [x] `license` / `rights` fields in manifest (SPDX)
+- [x] Changelog of format versions in `docs/CHANGELOG-FORMAT.md`
 
 ---
 

@@ -11,7 +11,11 @@
     "build:obsidian": "npm run build --prefix plugins/obsidian-rdoc",
     "build:site": "npm run build && node scripts/build-site.mjs",
     "dev": "tsc --watch",
-    "rdoc": "node dist/cli.js"
+    "rdoc": "node dist/cli.js",
+    "test:conformance": "node tests/conformance/run.mjs",
+    "pack:dry": "npm pack --dry-run",
+    "docker:build": "docker build -t ghcr.io/dokaiimob/rdoc:local .",
+    "rdoc:bun": "bun dist/cli.js"
   },
   "engines": {
     "node": ">=18"

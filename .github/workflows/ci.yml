@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Init demo (ok if sample exists)
+        run: |
+          set +e
+          node dist/cli.js init demo
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            echo "Created sample.md"
+          elif [ -f sample.md ]; then
+            echo "sample.md already present; continuing"
+          else
+            echo "init demo failed and sample.md is missing" >&2
+            exit 1
+          fi
+
+      - name: Build sample document
+        run: |
+          mkdir -p artifacts
+          node dist/cli.js build sample.md -o artifacts/ci.rdoc.html
+
+      - name: Inspect / validate
+        run: |
+          if node dist/cli.js validate --help >/dev/null 2>&1; then
+            node dist/cli.js validate artifacts/ci.rdoc.html
+          else
+            echo "validate command not available; running inspect"
+            node dist/cli.js inspect artifacts/ci.rdoc.html
+          fi
+
+      - name: Conformance suite
+        run: node tests/conformance/run.mjs

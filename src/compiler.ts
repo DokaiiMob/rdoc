@@ -170,7 +170,7 @@ export async function buildRdoc(options: BuildOptions): Promise<{
   const source = await readFile(inputPath, "utf8");
   const title = options.title ?? guessTitle(source, path.basename(inputPath));
   const author = options.author ?? "Anonymous";
-  const lang = options.lang ?? "ru";
+  const lang = options.lang ?? "en";
   const description = options.description ?? "";
 
   let md = processCallouts(source);
@@ -183,13 +183,19 @@ export async function buildRdoc(options: BuildOptions): Promise<{
   bodyHtml = sanitizeArticleHtml(bodyHtml);
   stripExternalResources(bodyHtml);
 
-  const created = new Date().toISOString();
+  const created =
+    options.created ||
+    (process.env.SOURCE_DATE_EPOCH
+      ? new Date(Number(process.env.SOURCE_DATE_EPOCH) * 1000).toISOString()
+      : new Date().toISOString());
   const { words, minutes } = estimateReading(bodyHtml);
+  const readLabel =
+    lang.startsWith("ru") ? `${minutes} мин чтения` : `${minutes} min read`;
 
   // Article inner HTML is what we hash (meta header + body).
   const articleInner = `<header class="rdoc-meta">
   <div><strong>${escapeHtml(title)}</strong></div>
-  <div>${escapeHtml(author)} · ${escapeHtml(created.slice(0, 10))} · ~${minutes} мин чтения</div>
+  <div>${escapeHtml(author)} · ${escapeHtml(created.slice(0, 10))} · ~${readLabel}</div>
 </header>
 ${bodyHtml}`;
 
@@ -206,6 +212,10 @@ ${bodyHtml}`;
     readingMinutes: minutes,
     wordCount: words,
     description: description || undefined,
+    profile: options.profile,
+    canonicalUrl: options.canonicalUrl || undefined,
+    license: options.license || undefined,
+    rights: options.rights || undefined,
   };
 
   const { css, js } = await loadTemplateAssets();

@@ -3,6 +3,8 @@ dist/
 /*.rdoc
 /*.rdoc.html
 /sample.md
+/rdoc.config.json
+artifacts/
 .DS_Store
 *.log
 plugins/obsidian-rdoc/node_modules/

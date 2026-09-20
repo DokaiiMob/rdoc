@@ -1,0 +1,19 @@
+{
+  "format": "rdoc-book",
+  "version": "1.0.0",
+  "title": "RDOC Handbook",
+  "parts": [
+    {
+      "href": "01-intro.rdoc.html",
+      "title": "Introduction"
+    },
+    {
+      "href": "02-manifest.rdoc.html",
+      "title": "Manifest and hashing"
+    },
+    {
+      "href": "03-security.rdoc",
+      "title": "Security and CSP"
+    }
+  ]
+}

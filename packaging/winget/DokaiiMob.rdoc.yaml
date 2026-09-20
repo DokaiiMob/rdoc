@@ -1,0 +1,39 @@
+# Winget manifest stub for rdoc
+# Package identifier: DokaiiMob.rdoc
+# Replace InstallerUrl / InstallerSha256 when a real Windows installer or portable zip is published.
+# Full winget submissions usually split into version + installer + locale YAMLs; this is a single-file sketch.
+
+PackageIdentifier: DokaiiMob.rdoc
+PackageVersion: 0.1.0
+PackageLocale: en-US
+Publisher: DokaiiMob
+PublisherUrl: https://github.com/DokaiiMob
+PublisherSupportUrl: https://github.com/DokaiiMob/rdoc/issues
+Author: DokaiiMob
+PackageName: rdoc
+PackageUrl: https://github.com/DokaiiMob/rdoc
+License: MIT
+LicenseUrl: https://github.com/DokaiiMob/rdoc/blob/main/LICENSE
+ShortDescription: CLI for .rdoc — self-contained responsive offline documents
+Description: >
+  Compile Markdown into a single offline-friendly .rdoc / .rdoc.html file
+  that reflows on mobile and opens in any browser.
+Moniker: rdoc
+Tags:
+  - markdown
+  - offline
+  - documents
+  - cli
+  - html
+Installers:
+  - Architecture: x64
+    InstallerType: zip
+    NestedInstallerType: portable
+    NestedInstallerFiles:
+      - RelativeFilePath: rdoc.exe
+        PortableCommandAlias: rdoc
+    InstallerUrl: https://github.com/DokaiiMob/rdoc/releases/download/v0.1.0/rdoc-windows-x64.zip
+    InstallerSha256: 0000000000000000000000000000000000000000000000000000000000000000
+    # UpgradeBehavior: uninstallPrevious
+ManifestType: singleton
+ManifestVersion: 1.6.0

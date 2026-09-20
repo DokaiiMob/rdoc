@@ -1,8 +1,9 @@
 # RFC 0001: Responsive Document (`.rdoc`) Format
 
-- **Status:** Draft
-- **Version:** 1.0.0
+- **Status:** Accepted
+- **Version:** 1.1.0
 - **Created:** 2026-09-20
+- **Accepted:** 2026-09-20 (community review completed for MVP; errata and clarifications still welcome)
 - **License:** MIT (specification text and reference implementation)
 
 ## 1. Abstract
@@ -29,6 +30,8 @@ PDF optimizes for fixed page geometry (e.g. A4). On smartphones this forces pinc
 | Article | Semantic body in `<article id="rdoc-content">` |
 | Reader chrome | In-document UI (TOC, font controls, theme, print) |
 | Polyglot | File that is both a valid HTML document and an RDOC container |
+| Annotations | Optional highlights / ranges, sidecar or embedded (see §17) |
+| Book spine | Multi-part catalog file `*.rdoc.book.json` (see §18) |
 
 ## 4. Media type and extensions
 
@@ -40,6 +43,8 @@ PDF optimizes for fixed page geometry (e.g. A4). On smartphones this forces pinc
 | Interop extension | `.rdoc.html` (recommended for messengers / OS without association) |
 
 Producers SHOULD emit `.rdoc.html` when distributing to unknown readers. Producers MAY emit `.rdoc` when the OS association is registered (see §11).
+
+Registration path notes: [IANA-MEDIA-TYPE.md](./IANA-MEDIA-TYPE.md).
 
 ## 5. File encoding and structure
 
@@ -89,12 +94,12 @@ so untrusted documents cannot fetch the network when opened.
 
 ## 6. Manifest
 
-### 6.1 Schema (version 1.0.0)
+### 6.1 Schema (version 1.1.0)
 
 ```json
 {
   "format": "rdoc",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "title": "string",
   "author": "string",
   "created": "ISO-8601 timestamp",
@@ -102,9 +107,15 @@ so untrusted documents cannot fetch the network when opened.
   "contentHash": "64 lowercase hex chars (SHA-256)",
   "readingMinutes": 1,
   "wordCount": 0,
-  "description": "optional string"
+  "description": "optional string",
+  "profile": "article",
+  "canonicalUrl": "https://example.org/docs/guide",
+  "license": "MIT",
+  "rights": "© 2026 Example Org. All rights reserved."
 }
 ```
+
+Extended example: [examples/manifest-extended.json](./examples/manifest-extended.json).
 
 | Field | Required | Notes |
 | --- | --- | --- |
@@ -118,8 +129,18 @@ so untrusted documents cannot fetch the network when opened.
 | `readingMinutes` | yes | Integer ≥ 1 |
 | `wordCount` | yes | Integer ≥ 0 |
 | `description` | no | Short summary |
+| `profile` | no | Document shape hint: `"article"` \| `"slides"` \| `"contract"` \| `"paper"` (default if omitted: `"article"`) |
+| `canonicalUrl` | no | Absolute URI of the canonical publication location |
+| `license` | no | SPDX license identifier string (e.g. `"MIT"`, `"CC-BY-4.0"`) |
+| `rights` | no | Free-text rights / copyright notice |
 
-Unknown fields SHOULD be ignored by readers (forward compatibility).
+### 6.2 Version negotiation
+
+1. Readers MUST parse the manifest as JSON and require `format === "rdoc"`.
+2. Readers MUST ignore unknown manifest fields (forward compatibility). Producers MAY add vendor-prefixed or experimental keys; ignoring unknowns is mandatory, not advisory.
+3. Readers MUST accept documents whose `version` has a higher MINOR or PATCH than the reader implements, provided required 1.x fields are present and valid.
+4. Readers MAY refuse documents whose MAJOR version is greater than the reader supports.
+5. Optional fields introduced in 1.1.0 (`profile`, `canonicalUrl`, `license`, `rights`) MUST NOT affect `contentHash` computation.
 
 ## 7. Integrity (contentHash)
 
@@ -160,8 +181,9 @@ Runtime SHOULD stay small (reference target: ≤ 10 KiB of JS before gzip).
 - Producers SHOULD embed a restrictive Content-Security-Policy meta tag that disables network access (`default-src 'none'`, `connect-src 'none'`) while allowing inline reader CSS/JS and `data:` images.
 - Compilers MUST reject external image/script/style URLs and SHOULD strip `<script>`, `<iframe>`, and inline event handlers from article HTML before packaging.
 - Print stylesheets SHOULD hide all reader chrome (`.rdoc-chrome`) so UI chrome never appears in PDF/paper output.
-- Future revisions MAY add optional detached signatures (e.g. Ed25519 over `contentHash`) — out of scope for 1.0.0.
+- Future revisions MAY add optional detached signatures (e.g. Ed25519 over `contentHash`) — out of scope for 1.0.0 / 1.1.0.
 - Do not execute arbitrary user Markdown as code beyond HTML produced by a vetted pipeline.
+- Annotation and book-spine sidecars (see §17–§18) are untrusted JSON; readers MUST NOT treat their contents as executable code and MUST ignore unknown fields.
 ## 11. OS file association
 
 | Platform | Mechanism |
@@ -193,6 +215,8 @@ Reference compiler pipeline:
 - Additive manifest fields bump MINOR.
 - Clarifications only bump PATCH.
 
+Format history: [CHANGELOG-FORMAT.md](./CHANGELOG-FORMAT.md).
+
 ## 14. Reference implementation
 
 This repository provides:
@@ -204,10 +228,98 @@ This repository provides:
 ## 15. Future work
 
 - Optional digital signatures and key IDs in the manifest
-- Annotation layer (highlights) as sidecar or embedded JSON
+- Richer annotation UX (threaded comments, shared sync) beyond the minimal schema in §17
 - Pandoc writer / reader
 - Browser extension “Save as .rdoc”
+- Native OS viewers beyond “open in browser”
 
 ## 16. IANA considerations
 
-Media type `application/vnd.rdoc+html` is proposed for vendor registration. Until registered, implementations MAY serve `text/html`.
+Media type `application/vnd.rdoc+html` is proposed for vendor registration. Until registered, implementations MAY serve `text/html`. See [IANA-MEDIA-TYPE.md](./IANA-MEDIA-TYPE.md).
+
+## 17. Sidecar and embedded annotations
+
+Annotations are optional. They do not participate in `contentHash`. Readers that do not implement annotations MUST ignore them.
+
+Detail and examples: [annotations.md](./annotations.md).
+
+### 17.1 Carriage
+
+Annotations MAY be provided in either of the following forms (producers SHOULD pick one per document; if both are present, the embedded form takes precedence):
+
+1. **Sidecar file** named `{basename}.rdoc.ann.json` next to `{basename}.rdoc` or `{basename}.rdoc.html` (e.g. `guide.rdoc.ann.json` beside `guide.rdoc.html`).
+2. **Embedded script** in the document:
+
+```html
+<script type="application/rdoc-annotations+json" id="rdoc-annotations">
+{annotations-json}
+</script>
+```
+
+### 17.2 Minimal schema
+
+```json
+{
+  "version": "1.0.0",
+  "documentHash": "optional 64 lowercase hex chars matching contentHash",
+  "highlights": [
+    {
+      "id": "hl-1",
+      "startPath": "optional CSS/DOM path hint",
+      "startOffset": 0,
+      "endOffset": 12,
+      "text": "optional quoted excerpt",
+      "color": "optional color token or CSS color",
+      "created": "optional ISO-8601 timestamp"
+    }
+  ]
+}
+```
+
+| Field | Required | Notes |
+| --- | --- | --- |
+| `version` | yes | SemVer of the annotations schema |
+| `documentHash` | no | If present, SHOULD match the document `contentHash`; mismatch MAY warn |
+| `highlights` | yes | Array (MAY be empty) |
+| `highlights[].id` | yes | Stable unique string within the file |
+| `highlights[].startPath` | no | Locator hint for the start node |
+| `highlights[].startOffset` | no | Character offset within the located text node / range |
+| `highlights[].endOffset` | no | End character offset |
+| `highlights[].text` | no | Snapshot of highlighted text for display if the DOM moved |
+| `highlights[].color` | no | Presentation hint |
+| `highlights[].created` | no | When the highlight was created |
+
+Readers MUST ignore unknown fields in the annotations object and in each highlight. Example: [examples/annotations.example.json](./examples/annotations.example.json).
+
+## 18. Multi-article / book profile
+
+A **book** is a ordered catalog of `.rdoc` / `.rdoc.html` parts, not a single hashed article. Detail: [book-profile.md](./book-profile.md).
+
+### 18.1 Spine file
+
+Producers MAY ship a spine file named `*.rdoc.book.json` (e.g. `handbook.rdoc.book.json`) with:
+
+```json
+{
+  "format": "rdoc-book",
+  "version": "1.0.0",
+  "title": "Handbook",
+  "parts": [
+    { "href": "01-intro.rdoc.html", "title": "Introduction" },
+    { "href": "02-setup.rdoc.html", "title": "Setup" }
+  ]
+}
+```
+
+| Field | Required | Notes |
+| --- | --- | --- |
+| `format` | yes | Constant `"rdoc-book"` |
+| `version` | yes | SemVer of the book spine schema |
+| `title` | yes | Collection title |
+| `parts` | yes | Ordered array; MUST have at least one entry |
+| `parts[].href` | yes | Relative URI to a `.rdoc` or `.rdoc.html` part |
+| `parts[].title` | yes | Human title for the part (MAY differ from the part manifest `title`) |
+
+Readers MUST ignore unknown spine fields and unknown keys on each part. Individual parts remain ordinary RDOC documents with their own manifests and `contentHash` values. Example: [examples/book.spine.example.json](./examples/book.spine.example.json).
+
+When a part’s manifest sets `"profile": "article"` (or omits `profile`), it is a normal chapter. Other profile values (`slides`, `contract`, `paper`) MAY be used for specialized parts; readers MAY adapt chrome accordingly but MUST still render the article region.
