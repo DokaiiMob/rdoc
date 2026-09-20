@@ -4,7 +4,16 @@ import { fileURLToPath } from "node:url";
 import { marked } from "marked";
 import type { BuildOptions, RdocManifest } from "./types.js";
 import { RDOC_VERSION } from "./types.js";
-import { estimateReading, sha256Hex } from "./validator.js";
+import { estimateReading, hashArticleContent } from "./validator.js";
+import { RDOC_CSP, sanitizeArticleHtml } from "./normalize.js";
+import {
+  escapeHtml,
+  guessTitle,
+  processCallouts,
+  processFootnotes,
+} from "./md-ext.js";
+
+export { processCallouts, processFootnotes } from "./md-ext.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TEMPLATE_DIR = path.join(__dirname, "template");
@@ -19,11 +28,6 @@ const MIME: Record<string, string> = {
   ".avif": "image/avif",
 };
 
-marked.setOptions({
-  gfm: true,
-  breaks: false,
-});
-
 async function loadTemplateAssets(): Promise<{ css: string; js: string }> {
   const [css, js] = await Promise.all([
     readFile(path.join(TEMPLATE_DIR, "reader.css"), "utf8"),
@@ -32,63 +36,10 @@ async function loadTemplateAssets(): Promise<{ css: string; js: string }> {
   return { css, js };
 }
 
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
-/** Parse [^id] refs and [^id]: definitions into popover-friendly HTML. */
-export function processFootnotes(md: string): {
-  markdown: string;
-  footnotesHtml: string;
-} {
-  const defs = new Map<string, string>();
-  let body = md.replace(
-    /^\[\^([^\]]+)\]:\s*(.+)$/gm,
-    (_m, id: string, text: string) => {
-      defs.set(id, text.trim());
-      return "";
-    },
-  );
-
-  body = body.replace(/\[\^([^\]]+)\]/g, (_m, id: string) => {
-    return `<button type="button" class="rdoc-fn-ref" data-fn="${escapeHtml(id)}" aria-label="Сноска ${escapeHtml(id)}">${escapeHtml(id)}</button>`;
-  });
-
-  let footnotesHtml = "";
-  if (defs.size > 0) {
-    const items = [...defs.entries()]
-      .map(
-        ([id, text]) =>
-          `<aside id="fn-${escapeHtml(id)}" hidden data-fn-def>${text}</aside>`,
-      )
-      .join("\n");
-    footnotesHtml = `\n<div class="rdoc-footnotes" hidden>\n${items}\n</div>`;
-  }
-
-  return { markdown: body, footnotesHtml };
-}
-
-/** Callouts: ::: note ... ::: */
-export function processCallouts(md: string): string {
-  return md.replace(
-    /^:::\s*(\w+)\s*\n([\s\S]*?)^:::/gm,
-    (_m, kind: string, body: string) => {
-      const label =
-        kind === "warning"
-          ? "Важно"
-          : kind === "tip"
-            ? "Совет"
-            : kind === "info"
-              ? "Инфо"
-              : kind;
-      return `<aside class="rdoc-callout" data-kind="${escapeHtml(kind)}"><strong>${escapeHtml(label)}</strong>\n\n${body.trim()}\n</aside>`;
-    },
-  );
-}
+marked.setOptions({
+  gfm: true,
+  breaks: false,
+});
 
 async function inlineLocalImages(
   html: string,
@@ -143,11 +94,6 @@ function stripExternalResources(html: string): void {
   }
 }
 
-function guessTitle(md: string, fallback: string): string {
-  const m = md.match(/^#\s+(.+)$/m);
-  return (m?.[1] ?? fallback).trim();
-}
-
 function wrapDocument(opts: {
   manifest: RdocManifest;
   articleInner: string;
@@ -163,6 +109,7 @@ function wrapDocument(opts: {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
+<meta http-equiv="Content-Security-Policy" content="${RDOC_CSP}">
 <meta name="generator" content="rdoc ${RDOC_VERSION}">
 <meta name="description" content="${escapeHtml(manifest.description ?? "")}">
 <title>${escapeHtml(manifest.title)}</title>
@@ -179,8 +126,8 @@ ${css}
 </style>
 </head>
 <body>
-<div id="rdoc-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Прогресс чтения"></div>
-<header class="rdoc-bar">
+<div id="rdoc-progress" class="rdoc-chrome" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Прогресс чтения"></div>
+<header class="rdoc-bar rdoc-chrome">
   <button type="button" id="btn-toc" aria-controls="rdoc-toc">☰ Оглавление</button>
   <span class="rdoc-title-chip">${escapeHtml(manifest.title)}</span>
   <span class="spacer"></span>
@@ -189,9 +136,9 @@ ${css}
   <button type="button" id="btn-theme" title="Тема">Тема</button>
   <button type="button" id="btn-print" title="Печать / PDF">PDF</button>
 </header>
-<div class="rdoc-toc-backdrop" id="rdoc-toc-backdrop"></div>
+<div class="rdoc-toc-backdrop rdoc-chrome" id="rdoc-toc-backdrop"></div>
 <div class="rdoc-shell">
-  <nav class="rdoc-toc" id="rdoc-toc" aria-label="Оглавление">
+  <nav class="rdoc-toc rdoc-chrome" id="rdoc-toc" aria-label="Оглавление">
     <h2>Содержание</h2>
     <ol id="rdoc-toc-list"></ol>
   </nav>
@@ -199,7 +146,7 @@ ${css}
 ${articleInner}
   </article>
 </div>
-<aside class="rdoc-fn-pop" id="rdoc-fn-pop" hidden role="dialog" aria-label="Сноска">
+<aside class="rdoc-fn-pop rdoc-chrome" id="rdoc-fn-pop" hidden role="dialog" aria-label="Сноска">
   <header><span>Сноска</span><button type="button" id="rdoc-fn-close" aria-label="Закрыть">×</button></header>
   <div id="rdoc-fn-body"></div>
 </aside>
@@ -233,6 +180,7 @@ export async function buildRdoc(options: BuildOptions): Promise<{
   let bodyHtml = await marked.parse(md);
   bodyHtml = await inlineLocalImages(bodyHtml, baseDir);
   bodyHtml += footnotesHtml;
+  bodyHtml = sanitizeArticleHtml(bodyHtml);
   stripExternalResources(bodyHtml);
 
   const created = new Date().toISOString();
@@ -245,7 +193,7 @@ export async function buildRdoc(options: BuildOptions): Promise<{
 </header>
 ${bodyHtml}`;
 
-  const contentHash = sha256Hex(articleInner.trim());
+  const contentHash = hashArticleContent(articleInner);
 
   const manifest: RdocManifest = {
     format: "rdoc",

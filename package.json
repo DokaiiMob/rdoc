@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc && node scripts/copy-assets.mjs",
     "build:obsidian": "npm run build --prefix plugins/obsidian-rdoc",
+    "build:site": "npm run build && node scripts/build-site.mjs",
     "dev": "tsc --watch",
     "rdoc": "node dist/cli.js"
   },
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
+    "esbuild": "^0.24.0",
     "typescript": "^5.7.2"
   }
 }

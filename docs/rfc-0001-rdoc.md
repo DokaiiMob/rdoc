@@ -47,7 +47,8 @@ Producers SHOULD emit `.rdoc.html` when distributing to unknown readers. Produce
 
 - Files MUST be UTF-8.
 - A leading UTF-8 BOM SHOULD NOT be used.
-- Line endings MAY be LF or CRLF; validators MUST treat them as significant for hashing (hash the exact article bytes as stored).
+- Line endings in the stored file MAY be LF or CRLF.
+- Before hashing, implementations MUST canonicalize article text (see §7): Unicode NFC and newlines → LF.
 
 ### 5.2 Required skeleton
 
@@ -57,6 +58,7 @@ Producers SHOULD emit `.rdoc.html` when distributing to unknown readers. Produce
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; …">
   <title>{title}</title>
   <script type="application/rdoc+json" id="rdoc-manifest">
   {manifest-json}
@@ -73,6 +75,9 @@ Producers SHOULD emit `.rdoc.html` when distributing to unknown readers. Produce
 </html>
 ```
 
+Producers SHOULD emit a restrictive CSP meta tag (reference:
+`default-src 'none'; style-src 'unsafe-inline'; img-src data: blob:; script-src 'unsafe-inline'; …`)
+so untrusted documents cannot fetch the network when opened.
 ### 5.3 Constraints
 
 1. Document MUST be parseable as HTML5.
@@ -118,13 +123,18 @@ Unknown fields SHOULD be ignored by readers (forward compatibility).
 
 ## 7. Integrity (contentHash)
 
-1. Let `inner` be the exact character sequence inside `<article id="rdoc-content">…</article>`, with leading and trailing ASCII whitespace trimmed.
-2. Encode `inner` as UTF-8 bytes.
-3. `contentHash = hex(SHA-256(bytes))` using lowercase hexadecimal (`0-9a-f`).
-4. Validators MUST recompute and compare; mismatch MUST be reported as integrity failure.
+1. Let `inner` be the character sequence inside `<article id="rdoc-content">…</article>`.
+2. Canonicalize `inner`:
+   1. Apply Unicode Normalization Form **NFC**.
+   2. Replace all CRLF (`U+000D U+000A`) and lone CR (`U+000D`) with LF (`U+000A`).
+   3. Trim leading and trailing ASCII whitespace (`U+0009`, `U+000A`, `U+000D`, `U+0020`).
+3. Encode the canonical string as UTF-8 bytes.
+4. `contentHash = hex(SHA-256(bytes))` using lowercase hexadecimal (`0-9a-f`).
+5. Validators MUST recompute with the same canonicalization; mismatch MUST be reported as integrity failure.
+
+This canonicalization ensures `contentHash` is stable across Windows/macOS/Linux editors and Git `core.autocrlf` checkouts when the visible text is unchanged.
 
 Readers MAY still display content if the hash fails, but MUST surface a warning when possible (CLI `inspect` exits non-zero).
-
 ## 8. Semantics and accessibility
 
 - Prefer semantic HTML: `h1–h6`, `p`, `ul/ol`, `blockquote`, `pre/code`, `table`, `figure`, `aside`.
@@ -147,10 +157,11 @@ Runtime SHOULD stay small (reference target: ≤ 10 KiB of JS before gzip).
 ## 10. Security considerations
 
 - Treat documents as untrusted HTML. Opening in a browser grants normal web origin privileges for `file://` or whatever origin serves the file.
-- Compilers MUST reject external image/script/style URLs to reduce tracking and mixed-content surprises when later hosted.
+- Producers SHOULD embed a restrictive Content-Security-Policy meta tag that disables network access (`default-src 'none'`, `connect-src 'none'`) while allowing inline reader CSS/JS and `data:` images.
+- Compilers MUST reject external image/script/style URLs and SHOULD strip `<script>`, `<iframe>`, and inline event handlers from article HTML before packaging.
+- Print stylesheets SHOULD hide all reader chrome (`.rdoc-chrome`) so UI chrome never appears in PDF/paper output.
 - Future revisions MAY add optional detached signatures (e.g. Ed25519 over `contentHash`) — out of scope for 1.0.0.
 - Do not execute arbitrary user Markdown as code beyond HTML produced by a vetted pipeline.
-
 ## 11. OS file association
 
 | Platform | Mechanism |

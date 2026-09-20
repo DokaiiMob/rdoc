@@ -1,0 +1,9 @@
+# Enforce LF in the repo so Windows clones don't churn hashes / diffs
+* text=auto eol=lf
+*.{cmd,bat,ps1} text eol=crlf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary

@@ -13,6 +13,11 @@ export interface RdocManifest {
   description?: string;
 }
 
+const RDOC_CSP =
+  "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; " +
+  "style-src 'unsafe-inline'; img-src data: blob:; script-src 'unsafe-inline'; " +
+  "connect-src 'none'; font-src 'none'; object-src 'none'; media-src 'none'";
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
@@ -21,12 +26,22 @@ function escapeHtml(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
+export function normalizeForHash(text: string): string {
+  const nfc = text.normalize("NFC");
+  const lf = nfc.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  return lf.trim();
+}
+
 export async function sha256Hex(text: string): Promise<string> {
   const data = new TextEncoder().encode(text);
   const digest = await crypto.subtle.digest("SHA-256", data);
   return [...new Uint8Array(digest)]
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
+}
+
+export async function hashArticleContent(articleInner: string): Promise<string> {
+  return sha256Hex(normalizeForHash(articleInner));
 }
 
 export function estimateReading(html: string): {
@@ -66,14 +81,13 @@ export function mimeFromPath(p: string): string | null {
   return MIME[ext] ?? null;
 }
 
-/** Strip Obsidian-only chrome and external script/link tags from rendered HTML. */
+/** Strip Obsidian chrome and active content from rendered HTML. */
 export function sanitizeRenderedHtml(html: string): string {
   let out = html;
-  // Remove external scripts/styles if any leaked in.
-  out = out.replace(/<script\b[^>]*\bsrc=["'][^"']+["'][^>]*>\s*<\/script>/gi, "");
+  out = out.replace(/<script\b[\s\S]*?<\/script>/gi, "");
   out = out.replace(/<link\b[^>]+href=["']https?:[^"']+["'][^>]*>/gi, "");
-  // Drop internal-anchor edit buttons etc. if present.
-  out = out.replace(/<span class="[^"]*internal-embed[^"]*"[^>]*>[\s\S]*?<\/span>/gi, (m) => m);
+  out = out.replace(/<iframe\b[\s\S]*?<\/iframe>/gi, "");
+  out = out.replace(/\son[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "");
   return out;
 }
 
@@ -85,14 +99,15 @@ export async function wrapRdocDocument(opts: {
   bodyHtml: string;
 }): Promise<{ html: string; manifest: RdocManifest }> {
   const created = new Date().toISOString();
-  const { words, minutes } = estimateReading(opts.bodyHtml);
+  const bodyHtml = sanitizeRenderedHtml(opts.bodyHtml);
+  const { words, minutes } = estimateReading(bodyHtml);
   const articleInner = `<header class="rdoc-meta">
   <div><strong>${escapeHtml(opts.title)}</strong></div>
   <div>${escapeHtml(opts.author)} · ${escapeHtml(created.slice(0, 10))} · ~${minutes} мин чтения</div>
 </header>
-${opts.bodyHtml}`;
+${bodyHtml}`;
 
-  const contentHash = await sha256Hex(articleInner.trim());
+  const contentHash = await hashArticleContent(articleInner);
   const manifest: RdocManifest = {
     format: "rdoc",
     version: RDOC_VERSION,
@@ -113,6 +128,7 @@ ${opts.bodyHtml}`;
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
+<meta http-equiv="Content-Security-Policy" content="${RDOC_CSP}">
 <meta name="generator" content="rdoc-obsidian ${RDOC_VERSION}">
 <meta name="description" content="${escapeHtml(manifest.description ?? "")}">
 <title>${escapeHtml(manifest.title)}</title>
@@ -128,8 +144,8 @@ ${READER_CSS}
 </style>
 </head>
 <body>
-<div id="rdoc-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Прогресс чтения"></div>
-<header class="rdoc-bar">
+<div id="rdoc-progress" class="rdoc-chrome" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Прогресс чтения"></div>
+<header class="rdoc-bar rdoc-chrome">
   <button type="button" id="btn-toc" aria-controls="rdoc-toc">☰ Оглавление</button>
   <span class="rdoc-title-chip">${escapeHtml(manifest.title)}</span>
   <span class="spacer"></span>
@@ -138,9 +154,9 @@ ${READER_CSS}
   <button type="button" id="btn-theme" title="Тема">Тема</button>
   <button type="button" id="btn-print" title="Печать / PDF">PDF</button>
 </header>
-<div class="rdoc-toc-backdrop" id="rdoc-toc-backdrop"></div>
+<div class="rdoc-toc-backdrop rdoc-chrome" id="rdoc-toc-backdrop"></div>
 <div class="rdoc-shell">
-  <nav class="rdoc-toc" id="rdoc-toc" aria-label="Оглавление">
+  <nav class="rdoc-toc rdoc-chrome" id="rdoc-toc" aria-label="Оглавление">
     <h2>Содержание</h2>
     <ol id="rdoc-toc-list"></ol>
   </nav>
@@ -148,7 +164,7 @@ ${READER_CSS}
 ${articleInner}
   </article>
 </div>
-<aside class="rdoc-fn-pop" id="rdoc-fn-pop" hidden role="dialog" aria-label="Сноска">
+<aside class="rdoc-fn-pop rdoc-chrome" id="rdoc-fn-pop" hidden role="dialog" aria-label="Сноска">
   <header><span>Сноска</span><button type="button" id="rdoc-fn-close" aria-label="Закрыть">×</button></header>
   <div id="rdoc-fn-body"></div>
 </aside>

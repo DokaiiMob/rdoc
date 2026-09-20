@@ -4,7 +4,12 @@
 
 `.rdoc` / `.rdoc.html` — UTF-8 HTML-полиглот: открывается **в любом браузере** двойным кликом, не требует сети, CDN и стороннего ридера. Внутри — JSON-манифест с SHA-256, семантический HTML, адаптивный CSS и микро-рантайм (< 10 КБ JS).
 
-Спецификация: [docs/rfc-0001-rdoc.md](docs/rfc-0001-rdoc.md).
+Спецификация: [docs/rfc-0001-rdoc.md](docs/rfc-0001-rdoc.md) · Roadmap: [ROADMAP.md](ROADMAP.md) · Demo: [GitHub Pages](https://dokaiimob.github.io/rdoc/)
+
+## Live playground
+
+Откройте [dokaiimob.github.io/rdoc](https://dokaiimob.github.io/rdoc/) — перетащите `.md` и скачайте `.rdoc.html` без установки CLI. Исходники лендинга: `site/`, публикация: папка `docs/` (GitHub Pages).
+
 
 ## Требования
 
@@ -17,6 +22,8 @@
 cd rdoc
 npm install
 npm run build
+# optional: landing + in-browser converter
+npm run build:site
 ```
 
 После сборки CLI доступен как:
@@ -112,24 +119,31 @@ Command Palette → **Export current note to .rdoc**.
 - Печать / «экспорт в PDF» через диалог браузера
 - `@media print` без UI-хрома
 
+## Целостность и безопасность (RFC)
+
+- `contentHash` считается после **NFC** и приведения переносов к **LF** (устойчиво к Git `autocrlf`)
+- В каждый документ вшит жёсткий **CSP** (`default-src 'none'`, без сети)
+- Компилятор вырезает `<script>` / iframe / inline-handlers из article HTML
+- `@media print` скрывает весь `.rdoc-chrome` (бар, TOC, сноски, прогресс)
+
 ## Структура проекта
 
 ```
 rdoc/
-├── docs/rfc-0001-rdoc.md   # спецификация формата
-├── assoc/                  # MIME / registry / desktop helpers
-├── plugins/obsidian-rdoc/  # плагин экспорта
+├── docs/rfc-0001-rdoc.md
+├── ROADMAP.md
+├── site/                   # GitHub Pages playground
+├── assoc/
+├── plugins/obsidian-rdoc/
 ├── src/
 │   ├── cli.ts
 │   ├── compiler.ts
+│   ├── normalize.ts        # NFC + LF + CSP + sanitize
+│   ├── md-ext.ts
 │   ├── associate.ts
 │   ├── validator.ts
-│   ├── demo.ts
-│   ├── types.ts
 │   └── template/
-├── scripts/copy-assets.mjs
-├── package.json
-└── tsconfig.json
+└── …
 ```
 
 ## Формат файла (кратко)

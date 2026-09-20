@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; style-src 'unsafe-inline'; img-src data: blob:; script-src 'unsafe-inline'; connect-src 'none'; font-src 'none'; object-src 'none'; media-src 'none'">
+<meta name="generator" content="rdoc 1.0.0">
+<meta name="description" content="">
+<title>.rdoc — документ, который не нужно зумить</title>
+<!--
+  RDOC — Responsive Document (self-contained polyglot).
+  Open in any browser. No network required.
+  Spec: format=rdoc version=1.0.0
+-->
+<script type="application/rdoc+json" id="rdoc-manifest">
+{
+  "format": "rdoc",
+  "version": "1.0.0",
+  "title": ".rdoc — документ, который не нужно зумить",
+  "author": "rdoc",
+  "created": "2026-09-20T10:22:43.792Z",
+  "lang": "ru",
+  "contentHash": "5a459d5adc0e6c5af1a62a39dabf4f9b3ea43853ec40fad8e60ed6b8cf9324b6",
+  "readingMinutes": 2,
+  "wordCount": 405
+}
+</script>
+<style>
+/* rdoc reader — adaptive offline typography, no external fonts */
+:root {
+  color-scheme: light dark;
+  --bg: #f7f5f1;
+  --bg-elev: #ffffff;
+  --fg: #1a1a1a;
+  --muted: #5c5c5c;
+  --border: #e2ddd4;
+  --accent: #0b6e4f;
+  --accent-soft: #d8efe6;
+  --callout: #fff8e7;
+  --callout-border: #e6c86a;
+  --code-bg: #f0ece4;
+  --shadow: 0 8px 28px rgba(26, 26, 26, 0.12);
+  --measure: 42rem;
+  --pad: clamp(1rem, 4vw, 1.75rem);
+  --fs: 1.0625rem;
+  --lh: 1.7;
+  --radius: 10px;
+  --ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+    monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121416;
+    --bg-elev: #1b1e22;
+    --fg: #ececec;
+    --muted: #a0a6ad;
+    --border: #2c3238;
+    --accent: #5dcea2;
+    --accent-soft: #1a332a;
+    --callout: #2a2618;
+    --callout-border: #8a7430;
+    --code-bg: #23282e;
+    --shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #121416;
+  --bg-elev: #1b1e22;
+  --fg: #ececec;
+  --muted: #a0a6ad;
+  --border: #2c3238;
+  --accent: #5dcea2;
+  --accent-soft: #1a332a;
+  --callout: #2a2618;
+  --callout-border: #8a7430;
+  --code-bg: #23282e;
+  --shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
+}
+
+:root[data-theme="light"] {
+  --bg: #f7f5f1;
+  --bg-elev: #ffffff;
+  --fg: #1a1a1a;
+  --muted: #5c5c5c;
+  --border: #e2ddd4;
+  --accent: #0b6e4f;
+  --accent-soft: #d8efe6;
+  --callout: #fff8e7;
+  --callout-border: #e6c86a;
+  --code-bg: #f0ece4;
+  --shadow: 0 8px 28px rgba(26, 26, 26, 0.12);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--ui);
+  font-size: var(--fs);
+  line-height: var(--lh);
+  color: var(--fg);
+  background: var(--bg);
+  text-rendering: optimizeLegibility;
+}
+
+/* reading progress */
+#rdoc-progress {
+  position: fixed;
+  inset: 0 auto auto 0;
+  height: 3px;
+  width: 0;
+  z-index: 60;
+  background: var(--accent);
+  pointer-events: none;
+}
+
+/* chrome */
+.rdoc-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem var(--pad);
+  background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.rdoc-bar button {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.875rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+  min-height: 2.25rem;
+}
+
+.rdoc-bar button:hover,
+.rdoc-bar button:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.rdoc-bar .spacer {
+  flex: 1;
+}
+
+.rdoc-title-chip {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 40vw;
+}
+
+/* layout */
+.rdoc-shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  max-width: calc(var(--measure) + 16rem);
+  margin: 0 auto;
+}
+
+.rdoc-toc {
+  display: none;
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 50;
+  max-height: min(70vh, 28rem);
+  overflow: auto;
+  padding: 1rem var(--pad) 1.25rem;
+  background: var(--bg-elev);
+  border-top: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  border-radius: 16px 16px 0 0;
+}
+
+.rdoc-toc.open {
+  display: block;
+}
+
+.rdoc-toc h2 {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.rdoc-toc ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rdoc-toc a {
+  display: block;
+  padding: 0.55rem 0.35rem;
+  color: var(--fg);
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.rdoc-toc a:hover,
+.rdoc-toc a[aria-current="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.rdoc-toc .l2 {
+  padding-left: 1rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.rdoc-toc-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.rdoc-toc-backdrop.open {
+  display: block;
+}
+
+@media (min-width: 960px) {
+  .rdoc-shell {
+    grid-template-columns: 14rem minmax(0, var(--measure));
+    gap: 2rem;
+    padding: 0 var(--pad);
+  }
+
+  .rdoc-toc {
+    display: block;
+    position: sticky;
+    top: 3.5rem;
+    inset: auto;
+    max-height: calc(100vh - 4.5rem);
+    align-self: start;
+    margin-top: 1.5rem;
+    padding: 0.5rem 0.25rem;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .rdoc-toc-backdrop,
+  #btn-toc {
+    display: none !important;
+  }
+}
+
+/* article — ~65–75ch measure via rem + padding */
+article#rdoc-content {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 1.5rem var(--pad) 5rem;
+}
+
+article#rdoc-content > *:first-child {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  scroll-margin-top: 4rem;
+}
+
+h1 {
+  font-size: clamp(1.75rem, 5vw, 2.35rem);
+  margin: 0 0 0.75rem;
+}
+
+h2 {
+  font-size: clamp(1.35rem, 3.5vw, 1.65rem);
+  margin: 2.25rem 0 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+h3 {
+  font-size: 1.15rem;
+  margin: 1.75rem 0 0.5rem;
+}
+
+p {
+  margin: 0 0 1.05rem;
+}
+
+a {
+  color: var(--accent);
+}
+
+img,
+svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.25rem auto;
+}
+
+figure {
+  margin: 1.5rem 0;
+}
+
+figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+blockquote {
+  margin: 1.25rem 0;
+  padding: 0.25rem 0 0.25rem 1rem;
+  border-left: 3px solid var(--accent);
+  color: var(--muted);
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+pre {
+  overflow-x: auto;
+  padding: 1rem;
+  margin: 1.25rem 0;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  -webkit-overflow-scrolling: touch;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+  background: var(--code-bg);
+  padding: 0.12em 0.35em;
+  border-radius: 4px;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  font-size: 0.95rem;
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+th,
+td {
+  border: 1px solid var(--border);
+  padding: 0.55rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: var(--accent-soft);
+}
+
+.rdoc-callout {
+  margin: 1.35rem 0;
+  padding: 1rem 1.1rem;
+  background: var(--callout);
+  border: 1px solid var(--callout-border);
+  border-radius: var(--radius);
+}
+
+.rdoc-callout > strong:first-child {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--fg);
+}
+
+.rdoc-formula {
+  margin: 1.5rem auto;
+  text-align: center;
+  overflow-x: auto;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+/* footnotes as large tappable refs + popover */
+.rdoc-fn-ref {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.6rem;
+  min-height: 1.6rem;
+  margin: 0 0.1rem;
+  padding: 0 0.35rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  vertical-align: super;
+  cursor: pointer;
+}
+
+.rdoc-fn-ref:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.rdoc-fn-pop {
+  position: fixed;
+  z-index: 70;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: 1rem;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 1rem 1.1rem;
+  background: var(--bg-elev);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.rdoc-fn-pop[hidden] {
+  display: none;
+}
+
+.rdoc-fn-pop header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rdoc-fn-pop button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.rdoc-meta {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media print {
+  :root {
+    --bg: #fff;
+    --fg: #000;
+    --muted: #333;
+    --border: #ccc;
+    --accent: #000;
+    --code-bg: #f5f5f5;
+  }
+
+  /* Hide all reader chrome — never bleed into PDF / paper */
+  .rdoc-chrome,
+  #rdoc-progress,
+  .rdoc-bar,
+  .rdoc-toc,
+  .rdoc-toc-backdrop,
+  .rdoc-fn-pop,
+  .rdoc-shell > nav {
+    display: none !important;
+  }
+
+  .rdoc-shell {
+    display: block !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    grid-template-columns: none !important;
+  }
+
+  article#rdoc-content {
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  pre,
+  table,
+  .rdoc-callout,
+  figure {
+    break-inside: avoid;
+  }
+}
+
+</style>
+</head>
+<body>
+<div id="rdoc-progress" class="rdoc-chrome" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Прогресс чтения"></div>
+<header class="rdoc-bar rdoc-chrome">
+  <button type="button" id="btn-toc" aria-controls="rdoc-toc">☰ Оглавление</button>
+  <span class="rdoc-title-chip">.rdoc — документ, который не нужно зумить</span>
+  <span class="spacer"></span>
+  <button type="button" id="btn-fs-dn" title="Уменьшить шрифт">A−</button>
+  <button type="button" id="btn-fs-up" title="Увеличить шрифт">A+</button>
+  <button type="button" id="btn-theme" title="Тема">Тема</button>
+  <button type="button" id="btn-print" title="Печать / PDF">PDF</button>
+</header>
+<div class="rdoc-toc-backdrop rdoc-chrome" id="rdoc-toc-backdrop"></div>
+<div class="rdoc-shell">
+  <nav class="rdoc-toc rdoc-chrome" id="rdoc-toc" aria-label="Оглавление">
+    <h2>Содержание</h2>
+    <ol id="rdoc-toc-list"></ol>
+  </nav>
+  <article id="rdoc-content">
+<header class="rdoc-meta">
+  <div><strong>.rdoc — документ, который не нужно зумить</strong></div>
+  <div>rdoc · 2026-09-20 · ~2 мин чтения</div>
+</header>
+<h1>.rdoc — документ, который не нужно зумить</h1>
+<p><em>Открытый формат адаптивных офлайн-документов</em></p>
+<p>Этот файл — эталонная демонстрация <strong>Responsive Document (.rdoc)</strong>: самодостаточный HTML-полиглот с манифестом, встроенными стилями и микро-рантаймом. Его можно открыть двойным кликом в любом браузере — на телефоне, планшете или десктопе.</p>
+<aside class="rdoc-callout" data-kind="info"><strong>Инфо</strong>
+
+<p>Никакого CDN, никаких трекеров, никаких внешних шрифтов. Всё, что нужно для чтения, уже внутри файла.</p>
+</aside>
+
+<h2>Зачем это нужно</h2>
+<p>PDF проектировался под печать A4. На смартфоне его приходится <strong>зумить и скроллить горизонтально</strong>. Веб-страницы адаптивны, но разваливаются без сети.</p>
+<p><code>.rdoc</code> совмещает лучшее из двух миров:</p>
+<table>
+<thead>
+<tr>
+<th>Свойство</th>
+<th>PDF</th>
+<th>HTML-страница</th>
+<th><strong>.rdoc</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Автономность</td>
+<td>Да</td>
+<td>Часто нет</td>
+<td><strong>Да</strong></td>
+</tr>
+<tr>
+<td>Reflow на телефоне</td>
+<td>Нет</td>
+<td>Да</td>
+<td><strong>Да</strong></td>
+</tr>
+<tr>
+<td>Офлайн без CDN</td>
+<td>Да</td>
+<td>Редко</td>
+<td><strong>Да</strong></td>
+</tr>
+<tr>
+<td>Печать</td>
+<td>Отлично</td>
+<td>Средне</td>
+<td><strong>Хорошо</strong></td>
+</tr>
+<tr>
+<td>Целостность (hash)</td>
+<td>Опционально</td>
+<td>Нет</td>
+<td><strong>SHA-256</strong></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>«Формат файла должен открываться там, где человек уже есть — в браузере — а не требовать ещё одно приложение.»</p>
+</blockquote>
+<h2>Типографика и мера строки</h2>
+<p>Основной текст укладывается в комфортную ширину <strong>≈ 65–75 символов</strong>. Размер шрифта можно менять кнопками <strong>A− / A+</strong> в панели; тема переключается кнопкой <strong>Тема</strong>.</p>
+<h3>Сноски без прыжков</h3>
+<p>Классические сноски уводят взгляд в конец страницы. В .rdoc нажатие на маркер открывает <strong>popover</strong>. Попробуйте нажать сюда: <button type="button" class="rdoc-fn-ref" data-fn="1" aria-label="Сноска 1">1</button> и сюда: <button type="button" class="rdoc-fn-ref" data-fn="demo" aria-label="Сноска demo">demo</button>.</p>
+<h2>Формула (встроенный SVG)</h2>
+<p>Формула Эйлера как самодостаточный SVG — без MathJax и сети:</p>
+<div class="rdoc-formula" role="img" aria-label="e^(iπ) + 1 = 0">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80" width="300" height="80">
+  <text x="24" y="52" font-family="Georgia, 'Times New Roman', serif" font-size="32" fill="currentColor">e</text>
+  <text x="48" y="28" font-family="Georgia, 'Times New Roman', serif" font-size="16" fill="currentColor">iπ</text>
+  <text x="78" y="52" font-family="Georgia, 'Times New Roman', serif" font-size="32" fill="currentColor">+ 1 = 0</text>
+</svg>
+</div>
+
+<h2>Блок кода</h2>
+<p>Компиляция демо-документа:</p>
+<pre><code class="language-bash">npm install &amp;&amp; npm run build
+node dist/cli.js init demo
+node dist/cli.js build sample.md -o my_article.rdoc.html
+node dist/cli.js inspect my_article.rdoc.html
+</code></pre>
+<p>Минимальный манифест внутри файла:</p>
+<pre><code class="language-json">{
+  &quot;format&quot;: &quot;rdoc&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;title&quot;: &quot;Example&quot;,
+  &quot;contentHash&quot;: &quot;sha256-hex...&quot;
+}
+</code></pre>
+<h2>Врезка и предупреждение</h2>
+<aside class="rdoc-callout" data-kind="tip"><strong>Совет</strong>
+
+<p>Отправляйте <code>.rdoc.html</code> себе в Telegram «Избранное» или по AirDrop — на телефоне файл откроется мгновенно, без установки ридера.</p>
+</aside>
+
+<aside class="rdoc-callout" data-kind="warning"><strong>Важно</strong>
+
+<p>Не встраивайте внешние <code>http(s)</code>-картинки: компилятор отклонит их. Используйте локальные файлы — они будут инлайнены в base64.</p>
+</aside>
+
+<h2>Архитектура контейнера</h2>
+<ol>
+<li><strong>UTF-8 HTML</strong> — валидный документ, открывается двойным кликом.</li>
+<li><strong>JSON-манифест</strong> — <code>application/rdoc+json</code> с метаданными и SHA-256.</li>
+<li><strong>Семантический контент</strong> — чистый HTML без внешних зависимостей.</li>
+<li><strong>Вшитый CSS</strong> — светлая/тёмная тема, print, мобильный reflow.</li>
+<li><strong>Микро-рантайм</strong> — TOC, прогресс, шрифт, сноски, печать в PDF.</li>
+</ol>
+<h3>Печать</h3>
+<p>Кнопка <strong>PDF</strong> вызывает системный диалог печати браузера (<code>window.print</code>). Так вы получаете «чистый» PDF без потери исходного адаптивного файла.</p>
+<h2>Дальше</h2>
+<ul>
+<li>Спецификация и CLI живут рядом: собирайте заметки, отчёты и лонгриды в один автономный файл.</li>
+<li>Расширение <code>.rdoc.html</code> — стратегия «троянского коня»: нулевой friction для читателя.</li>
+</ul>
+<hr>
+<p><em>Собрано компилятором rdoc · демо-контент для MVP</em></p>
+
+<div class="rdoc-footnotes" hidden>
+<aside id="fn-1" hidden data-fn-def>Сноска открывается во всплывающей панели внизу экрана — удобно большим пальцем на мобильном.</aside>
+<aside id="fn-demo" hidden data-fn-def>Это вторая сноска. Закройте панель крестиком или клавишей Escape.</aside>
+</div>
+  </article>
+</div>
+<aside class="rdoc-fn-pop rdoc-chrome" id="rdoc-fn-pop" hidden role="dialog" aria-label="Сноска">
+  <header><span>Сноска</span><button type="button" id="rdoc-fn-close" aria-label="Закрыть">×</button></header>
+  <div id="rdoc-fn-body"></div>
+</aside>
+<script>
+/*! rdoc runtime <10KB — TOC, progress, theme, font, footnotes, print */
+(function () {
+  var root = document.documentElement;
+  var article = document.getElementById("rdoc-content");
+  var progress = document.getElementById("rdoc-progress");
+  var toc = document.getElementById("rdoc-toc");
+  var backdrop = document.getElementById("rdoc-toc-backdrop");
+  var tocList = document.getElementById("rdoc-toc-list");
+  var pop = document.getElementById("rdoc-fn-pop");
+  var popBody = document.getElementById("rdoc-fn-body");
+  var fs = parseFloat(localStorage.getItem("rdoc-fs") || "1.0625");
+
+  function applyFs() {
+    root.style.setProperty("--fs", fs + "rem");
+    localStorage.setItem("rdoc-fs", String(fs));
+  }
+  applyFs();
+
+  function setTheme(mode) {
+    if (mode === "system") root.removeAttribute("data-theme");
+    else root.setAttribute("data-theme", mode);
+    localStorage.setItem("rdoc-theme", mode);
+  }
+  setTheme(localStorage.getItem("rdoc-theme") || "system");
+
+  function slugify(text) {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\u0400-\u04FF\s-]/g, "")
+      .replace(/\s+/g, "-");
+  }
+
+  function buildToc() {
+    if (!article || !tocList) return;
+    var heads = article.querySelectorAll("h2, h3");
+    var html = "";
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      if (!h.id) h.id = slugify(h.textContent || "section-" + i);
+      var cls = h.tagName === "H3" ? ' class="l2"' : "";
+      html +=
+        "<li" +
+        cls +
+        '><a href="#' +
+        h.id +
+        '">' +
+        (h.textContent || "") +
+        "</a></li>";
+    }
+    tocList.innerHTML = html || "<li><em>Нет заголовков</em></li>";
+  }
+  buildToc();
+
+  function onScroll() {
+    if (!progress || !article) return;
+    var rect = article.getBoundingClientRect();
+    var total = article.scrollHeight - window.innerHeight;
+    var scrolled = Math.min(Math.max(-rect.top, 0), total || 1);
+    var pct = total > 0 ? (scrolled / total) * 100 : 100;
+    progress.style.width = pct + "%";
+
+    if (!tocList) return;
+    var links = tocList.querySelectorAll("a");
+    var current = null;
+    var heads = article.querySelectorAll("h2, h3");
+    for (var i = 0; i < heads.length; i++) {
+      if (heads[i].getBoundingClientRect().top <= 96) current = heads[i].id;
+    }
+    for (var j = 0; j < links.length; j++) {
+      var a = links[j];
+      if (a.getAttribute("href") === "#" + current)
+        a.setAttribute("aria-current", "true");
+      else a.removeAttribute("aria-current");
+    }
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  function openToc(open) {
+    if (!toc || !backdrop) return;
+    toc.classList.toggle("open", open);
+    backdrop.classList.toggle("open", open);
+  }
+
+  document.getElementById("btn-toc")?.addEventListener("click", function () {
+    openToc(!toc.classList.contains("open"));
+  });
+  backdrop?.addEventListener("click", function () {
+    openToc(false);
+  });
+  tocList?.addEventListener("click", function (e) {
+    if (e.target && e.target.tagName === "A") openToc(false);
+  });
+
+  document.getElementById("btn-fs-up")?.addEventListener("click", function () {
+    fs = Math.min(1.5, +(fs + 0.0625).toFixed(4));
+    applyFs();
+  });
+  document.getElementById("btn-fs-dn")?.addEventListener("click", function () {
+    fs = Math.max(0.875, +(fs - 0.0625).toFixed(4));
+    applyFs();
+  });
+  document.getElementById("btn-theme")?.addEventListener("click", function () {
+    var cur = localStorage.getItem("rdoc-theme") || "system";
+    var next = cur === "system" ? "dark" : cur === "dark" ? "light" : "system";
+    setTheme(next);
+  });
+  document.getElementById("btn-print")?.addEventListener("click", function () {
+    window.print();
+  });
+
+  function closeFn() {
+    if (pop) pop.hidden = true;
+  }
+  document.getElementById("rdoc-fn-close")?.addEventListener("click", closeFn);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      closeFn();
+      openToc(false);
+    }
+  });
+
+  document.addEventListener("click", function (e) {
+    var t = e.target;
+    if (!t || !t.classList || !t.classList.contains("rdoc-fn-ref")) return;
+    e.preventDefault();
+    var id = t.getAttribute("data-fn");
+    var note = id && document.getElementById("fn-" + id);
+    if (!pop || !popBody || !note) return;
+    popBody.innerHTML = note.innerHTML;
+    pop.hidden = false;
+  });
+})();
+
+</script>
+</body>
+</html>
