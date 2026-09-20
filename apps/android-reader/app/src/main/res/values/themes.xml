@@ -2,9 +2,17 @@
 <resources>
     <style name="Theme.RdocReader" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/brand_green</item>
-        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorOnPrimary">@color/cream</item>
         <item name="colorPrimaryContainer">@color/brand_green_container</item>
+        <item name="colorOnPrimaryContainer">@color/ink</item>
         <item name="colorSecondary">@color/brand_green</item>
+        <item name="colorOnSecondary">@color/cream</item>
+        <item name="colorSecondaryContainer">@color/brand_green_container</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/on_surface</item>
+        <item name="colorSurfaceContainer">@color/surface_container</item>
+        <item name="colorOutline">@color/outline_soft</item>
+        <item name="android:colorBackground">@color/surface</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>

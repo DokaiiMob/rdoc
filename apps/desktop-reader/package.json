@@ -1,6 +1,6 @@
 {
   "name": "rdoc-desktop-reader",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Minimal Electron reader for bare .rdoc HTML polyglot files",
   "main": "main.js",
   "author": "DokaiiMob",

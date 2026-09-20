@@ -67,32 +67,45 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add(0, MENU_OPEN, 0, R.string.menu_open).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+        menu.add(0, MENU_OPEN, 0, R.string.menu_open)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         menu.add(0, MENU_RECENT, 1, R.string.menu_recent)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+        menu.add(0, MENU_ABOUT, 2, R.string.menu_about)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             MENU_OPEN -> {
-                openDocument.launch(
-                    arrayOf(
-                        "*/*",
-                        "text/html",
-                        "application/vnd.rdoc+html",
-                        "application/rdoc+html",
-                        "text/plain",
-                        "application/octet-stream"
-                    )
-                )
+                launchOpenPicker()
                 return true
             }
             MENU_RECENT -> {
                 showRecentPicker()
                 return true
             }
+            MENU_ABOUT -> {
+                startActivity(
+                    Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_url)))
+                )
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun launchOpenPicker() {
+        openDocument.launch(
+            arrayOf(
+                "*/*",
+                "text/html",
+                "application/vnd.rdoc+html",
+                "application/rdoc+html",
+                "text/plain",
+                "application/octet-stream"
+            )
+        )
     }
 
     private fun applySystemBarInsets(toolbar: MaterialToolbar) {
@@ -142,8 +155,26 @@ class MainActivity : AppCompatActivity() {
                 view: WebView?,
                 request: WebResourceRequest?
             ): Boolean {
-                val url = request?.url?.toString() ?: return false
-                return !(url.startsWith("about:") || url.startsWith("data:") || url.startsWith("#"))
+                val uri = request?.url ?: return false
+                val url = uri.toString()
+                when {
+                    url.startsWith("rdoc-action://open") -> {
+                        launchOpenPicker()
+                        return true
+                    }
+                    url.startsWith("rdoc-action://recent") -> {
+                        showRecentPicker()
+                        return true
+                    }
+                    url.startsWith("http://") || url.startsWith("https://") -> {
+                        startActivity(Intent(Intent.ACTION_VIEW, uri))
+                        return true
+                    }
+                    url.startsWith("about:") || url.startsWith("data:") || url.startsWith("#") -> {
+                        return false
+                    }
+                }
+                return true
             }
         }
     }
@@ -286,27 +317,121 @@ class MainActivity : AppCompatActivity() {
             <html lang="en">
             <head>
               <meta charset="utf-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
               <title>rdoc Reader</title>
               <style>
-                :root { color-scheme: light dark; }
-                body {
-                  margin: 0; min-height: 100vh; display: grid; place-items: center;
-                  font-family: system-ui, sans-serif;
-                  background: linear-gradient(160deg, #0B6E4F22, #1A3D3222);
-                  color: CanvasText; padding: 1.5rem;
-                  box-sizing: border-box;
+                :root {
+                  color-scheme: light dark;
+                  --cream: #f7fff9;
+                  --paper: #eef6f1;
+                  --ink: #1a262f;
+                  --muted: #4a6358;
+                  --accent: #0b6e4f;
+                  --mint: #7bc68e;
+                  --lh: 1.65;
                 }
-                main { text-align: center; max-width: 22rem; }
-                h1 { font-size: 1.6rem; margin: 0 0 0.5rem; }
-                p { opacity: 0.85; line-height: 1.45; }
+                @media (prefers-color-scheme: dark) {
+                  :root {
+                    --cream: #0f1a15;
+                    --paper: #15231c;
+                    --ink: #e8f5ee;
+                    --muted: #9bb5a6;
+                  }
+                }
+                * { box-sizing: border-box; }
+                body {
+                  margin: 0;
+                  min-height: 100vh;
+                  display: grid;
+                  place-items: center;
+                  font-family: "Roboto", system-ui, sans-serif;
+                  color: var(--ink);
+                  background:
+                    radial-gradient(700px 380px at 10% -10%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 55%),
+                    linear-gradient(168deg, var(--cream), var(--paper));
+                  padding: 2rem 1.35rem 2.5rem;
+                }
+                main {
+                  width: min(100%, 22.5rem);
+                  text-align: center;
+                }
+                .mark {
+                  width: 72px; height: 72px; margin: 0 auto 1.1rem;
+                  border-radius: 18px;
+                  box-shadow: 0 10px 28px color-mix(in srgb, var(--accent) 22%, transparent);
+                }
+                h1 {
+                  margin: 0;
+                  font-family: Georgia, "Noto Serif", serif;
+                  font-size: 2rem;
+                  font-weight: 700;
+                  letter-spacing: -0.03em;
+                  color: var(--accent);
+                  line-height: 1.15;
+                }
+                .lede {
+                  margin: 0.7rem 0 0;
+                  font-size: 1.05rem;
+                  line-height: var(--lh);
+                  color: var(--ink);
+                }
+                p {
+                  margin: 0.65rem 0 0;
+                  font-size: 0.98rem;
+                  line-height: var(--lh);
+                  color: var(--muted);
+                }
+                .actions {
+                  display: grid;
+                  gap: 0.65rem;
+                  margin-top: 1.6rem;
+                }
+                a.cta {
+                  display: block;
+                  text-decoration: none;
+                  font-weight: 600;
+                  font-size: 1rem;
+                  padding: 0.95rem 1.1rem;
+                  min-height: 3rem;
+                  border-radius: 12px;
+                  line-height: 1.2;
+                }
+                a.primary {
+                  background: var(--accent);
+                  color: #f7fff9;
+                }
+                a.secondary {
+                  background: color-mix(in srgb, var(--accent) 12%, transparent);
+                  color: var(--accent);
+                  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+                }
+                .hint {
+                  margin-top: 1.35rem;
+                  font-size: 0.9rem;
+                }
+                .hint a { color: var(--accent); font-weight: 600; }
+                code { color: var(--accent); font-size: 0.95em; }
               </style>
             </head>
             <body>
               <main>
-                <h1>rdoc Reader</h1>
-                <p>Open a bare <strong>.rdoc</strong> from the menu, Files, or another app — choose <strong>Always</strong> to set as default.</p>
-                <p>A .rdoc is a self-contained HTML polyglot — offline, adaptive, integrity-hashed.</p>
+                <svg class="mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="rdoc">
+                  <rect width="512" height="512" rx="112" fill="#F7FFF9"/>
+                  <path fill="#0B6E4F" d="M150 88h176c8.8 0 16 7.2 16 16v40c0 22.1 17.9 40 40 40h40c8.8 0 16 7.2 16 16v204c0 26.5-21.5 48-48 48H150c-26.5 0-48-21.5-48-48V136c0-26.5 21.5-48 48-48z"/>
+                  <path fill="#F7FFF9" d="M342 88l86 86h-46c-22.1 0-40-17.9-40-40V88z"/>
+                  <rect x="186" y="248" width="148" height="22" rx="11" fill="#7BC68E"/>
+                  <rect x="186" y="292" width="118" height="22" rx="11" fill="#7BC68E"/>
+                  <rect x="216" y="336" width="138" height="22" rx="11" fill="#7BC68E"/>
+                  <text x="186" y="214" fill="#1A262F" font-family="Georgia, serif" font-size="92" font-weight="700">r</text>
+                </svg>
+                <h1>rdoc</h1>
+                <p class="lede">Calm offline reading for self-contained documents.</p>
+                <p>Open a bare <code>.rdoc</code> from the toolbar, Files, or another app — choose <strong>Always</strong> to set as default.</p>
+                <div class="actions">
+                  <a class="cta primary" href="rdoc-action://open">Open…</a>
+                  <a class="cta secondary" href="rdoc-action://recent">Recent</a>
+                </div>
+                <p class="hint"><a href="https://github.com/DokaiiMob/rdoc#why-rdoc">What is .rdoc?</a></p>
               </main>
             </body>
             </html>
@@ -318,5 +443,6 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val MENU_OPEN = 1
         private const val MENU_RECENT = 2
+        private const val MENU_ABOUT = 3
     }
 }

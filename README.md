@@ -270,9 +270,9 @@ Open **`.rdoc`** without renaming to `.html` — WebView / Electron loads the fi
 
 | Reader | Path | Download |
 | --- | --- | --- |
-| Windows (portable + NSIS) | [`apps/desktop-reader/`](apps/desktop-reader/) | [Release v0.3.0](https://github.com/DokaiiMob/rdoc/releases/tag/v0.3.0) (unsigned; Authenticode deferred) |
+| Windows (portable + NSIS) | [`apps/desktop-reader/`](apps/desktop-reader/) | [Release v0.4.0](https://github.com/DokaiiMob/rdoc/releases/tag/v0.4.0) (unsigned; Authenticode deferred) |
 | macOS / Linux | same desktop app | Tag `v*` / `reader-v*` → workflow **Release readers** (dmg/zip, AppImage/deb when green) |
-| Android (APK) | [`apps/android-reader/`](apps/android-reader/) | [Release assets](https://github.com/DokaiiMob/rdoc/releases) |
+| Android (APK) | [`apps/android-reader/`](apps/android-reader/) | [Release v0.4.0](https://github.com/DokaiiMob/rdoc/releases/tag/v0.4.0) |
 
 Brand mark: [`apps/shared/branding/`](apps/shared/branding/)
 

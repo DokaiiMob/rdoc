@@ -7,141 +7,233 @@
   <style>
     :root {
       color-scheme: light dark;
-      --bg0: #f4faf7;
-      --bg1: #e2f0e9;
-      --ink: #12241c;
-      --muted: #3d5a4c;
+      --cream: #f7fff9;
+      --paper: #eef6f1;
+      --ink: #1a262f;
+      --muted: #4a6358;
       --accent: #0b6e4f;
+      --accent-soft: #c8e6d9;
+      --mint: #7bc68e;
       --accent-ink: #f7fff9;
-      --line: color-mix(in srgb, var(--ink) 14%, transparent);
-      --drop: color-mix(in srgb, var(--accent) 12%, transparent);
-      --danger: #b42318;
+      --line: color-mix(in srgb, var(--ink) 12%, transparent);
+      --surface: color-mix(in srgb, var(--cream) 88%, transparent);
+      --danger: #9b2c2c;
+      --measure: 40rem;
+      --lh: 1.65;
+      --titlebar: 36px;
+      --font-ui: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+      --font-brand: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+      --font-body: "Segoe UI Variable Text", "Segoe UI", Georgia, serif;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg0: #0f1a15;
-        --bg1: #16251e;
+        --cream: #0f1a15;
+        --paper: #15231c;
         --ink: #e8f5ee;
         --muted: #9bb5a6;
-        --line: color-mix(in srgb, var(--ink) 18%, transparent);
-        --drop: color-mix(in srgb, var(--accent) 22%, transparent);
+        --accent-soft: #1a3d32;
+        --line: color-mix(in srgb, var(--ink) 16%, transparent);
+        --surface: color-mix(in srgb, var(--paper) 75%, transparent);
       }
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; }
     body {
-      font-family: "Segoe UI", system-ui, sans-serif;
+      font-family: var(--font-ui);
+      font-size: 16px;
+      line-height: var(--lh);
       color: var(--ink);
       background:
-        radial-gradient(1200px 600px at 10% -10%, #0b6e4f33, transparent 55%),
-        radial-gradient(900px 500px at 100% 0%, #1a3d3244, transparent 50%),
-        linear-gradient(165deg, var(--bg0), var(--bg1));
+        radial-gradient(900px 480px at 8% -8%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 55%),
+        radial-gradient(700px 420px at 100% 0%, color-mix(in srgb, var(--mint) 12%, transparent), transparent 50%),
+        linear-gradient(168deg, var(--cream), var(--paper));
     }
     .wrap {
       min-height: 100%;
       display: grid;
       grid-template-rows: auto 1fr auto;
-      padding: 1.25rem 1.5rem 1.5rem;
-      gap: 1rem;
-      max-width: 52rem;
+      padding: calc(var(--titlebar) + 0.75rem) 1.5rem 1.75rem;
+      gap: 1.75rem;
+      max-width: calc(var(--measure) + 6rem);
       margin: 0 auto;
     }
     header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 1rem;
       flex-wrap: wrap;
       -webkit-app-region: drag;
-      padding-top: 0.35rem;
+      padding-top: 0.15rem;
     }
     header button, header .actions { -webkit-app-region: no-drag; }
     .brand {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 1rem;
+      min-width: 0;
     }
     .brand img {
-      width: 48px; height: 48px; border-radius: 22%;
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      box-shadow: 0 8px 28px color-mix(in srgb, var(--accent) 22%, transparent);
+      flex-shrink: 0;
     }
+    .brand-copy { min-width: 0; }
     .brand h1 {
       margin: 0;
-      font-size: 1.35rem;
-      letter-spacing: -0.02em;
-      font-weight: 650;
+      font-family: var(--font-brand);
+      font-size: clamp(1.75rem, 3.2vw, 2.15rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--accent);
     }
     .brand p {
-      margin: 0.15rem 0 0;
-      font-size: 0.85rem;
+      margin: 0.35rem 0 0;
+      font-size: 0.95rem;
       color: var(--muted);
+      max-width: 28rem;
+      line-height: 1.5;
     }
-    .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+      padding-top: 0.35rem;
+    }
     button, .btn {
       appearance: none;
       border: 1px solid var(--line);
-      background: color-mix(in srgb, Canvas 70%, transparent);
+      background: var(--surface);
       color: var(--ink);
-      border-radius: 8px;
-      padding: 0.45rem 0.85rem;
+      border-radius: 10px;
+      padding: 0.55rem 1rem;
+      min-height: 2.5rem;
       font: inherit;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.12s;
     }
     button.primary {
       background: var(--accent);
       color: var(--accent-ink);
       border-color: transparent;
+      font-weight: 600;
     }
-    button:hover { filter: brightness(1.05); }
-    button.danger { color: var(--danger); }
+    button.ghost {
+      background: transparent;
+      border-color: transparent;
+      color: var(--muted);
+    }
+    button:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
+    button.primary:hover { filter: brightness(1.06); }
+    button.ghost:hover { color: var(--ink); background: var(--surface); }
+    button.danger { color: var(--danger); border-color: transparent; background: transparent; min-height: auto; padding: 0.35rem 0.55rem; }
+    button:active { transform: translateY(1px); }
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 1.25rem;
+    }
     .drop {
-      border: 2px dashed color-mix(in srgb, var(--accent) 45%, var(--line));
-      border-radius: 16px;
-      background: var(--drop);
-      padding: 2.5rem 1.5rem;
+      border: 1.5px dashed color-mix(in srgb, var(--accent) 42%, var(--line));
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, transparent), transparent 70%),
+        var(--surface);
+      padding: 2.75rem 1.75rem;
       text-align: center;
-      transition: border-color 0.15s, background 0.15s, transform 0.15s;
+      transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
     }
     .drop.dragover {
       border-color: var(--accent);
-      background: color-mix(in srgb, var(--accent) 22%, transparent);
-      transform: scale(1.01);
+      border-style: solid;
+      background: color-mix(in srgb, var(--accent-soft) 70%, var(--surface));
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent);
     }
     .drop h2 {
-      margin: 0 0 0.4rem;
-      font-size: 1.2rem;
+      margin: 0 0 0.55rem;
+      font-family: var(--font-brand);
+      font-size: 1.45rem;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
     }
     .drop p {
-      margin: 0.35rem 0;
+      margin: 0.4rem auto;
       color: var(--muted);
-      line-height: 1.45;
+      max-width: 32rem;
+      font-size: 1rem;
+      line-height: var(--lh);
     }
-    .hint {
+    .drop .lede {
+      color: var(--ink);
+      font-size: 1.05rem;
+    }
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: center;
+      margin-top: 1.35rem;
+    }
+    .cta-row button { min-width: 7.5rem; }
+    .links {
+      margin-top: 1.1rem;
       font-size: 0.92rem;
       color: var(--muted);
-      margin: 0.75rem 0 0;
     }
+    .links a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+    .links a:hover { border-bottom-color: var(--accent); }
     kbd {
-      font: 0.85em ui-monospace, Consolas, monospace;
+      font: 0.82em ui-monospace, Consolas, monospace;
       border: 1px solid var(--line);
       border-bottom-width: 2px;
-      border-radius: 4px;
-      padding: 0.05em 0.35em;
+      border-radius: 5px;
+      padding: 0.08em 0.4em;
+      background: var(--surface);
+      color: var(--ink);
     }
-    section.recent {
-      margin-top: 0.25rem;
+    code {
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 0.92em;
+      color: var(--accent);
+    }
+
+    section.recent { margin-top: 0.15rem; }
+    .recent-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 0.65rem;
     }
     section.recent h3 {
-      margin: 0 0 0.5rem;
-      font-size: 0.95rem;
-      font-weight: 600;
+      margin: 0;
+      font-size: 0.78rem;
+      font-weight: 650;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
     }
     ul {
       list-style: none;
       margin: 0;
       padding: 0;
       display: grid;
-      gap: 0.35rem;
+      gap: 0.4rem;
     }
     li.recent-item {
       display: grid;
@@ -149,40 +241,56 @@
       gap: 0.5rem;
       align-items: center;
       border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 0.55rem 0.7rem;
-      background: color-mix(in srgb, Canvas 55%, transparent);
+      border-radius: 12px;
+      padding: 0.7rem 0.85rem;
+      background: var(--surface);
+      transition: border-color 0.15s;
     }
+    li.recent-item:hover { border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
     li.recent-item button.open {
       text-align: left;
       border: 0;
       background: transparent;
       padding: 0;
       width: 100%;
+      min-height: auto;
+      border-radius: 0;
     }
+    li.recent-item button.open:hover { border-color: transparent; }
     li.recent-item .title {
       font-weight: 600;
       display: block;
+      line-height: 1.35;
     }
     li.recent-item .path {
       font-size: 0.78rem;
       color: var(--muted);
       word-break: break-all;
+      line-height: 1.4;
+      margin-top: 0.15rem;
     }
     .empty-recent {
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       margin: 0;
+      line-height: var(--lh);
     }
     .queue {
       border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 0.65rem 0.8rem;
-      background: color-mix(in srgb, Canvas 55%, transparent);
+      border-radius: 12px;
+      padding: 0.75rem 0.9rem;
+      background: var(--surface);
       display: none;
     }
     .queue.visible { display: block; }
-    .queue h3 { margin: 0 0 0.4rem; font-size: 0.9rem; }
+    .queue h3 {
+      margin: 0 0 0.45rem;
+      font-size: 0.78rem;
+      font-weight: 650;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
     footer {
       display: flex;
       justify-content: space-between;
@@ -190,20 +298,23 @@
       flex-wrap: wrap;
       font-size: 0.82rem;
       color: var(--muted);
+      padding-top: 0.25rem;
+      border-top: 1px solid var(--line);
     }
-    footer a { color: var(--accent); }
+    footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
     .toast {
       position: fixed;
       left: 50%;
-      bottom: 1.25rem;
+      bottom: 1.35rem;
       transform: translateX(-50%);
       background: #1a3d32;
       color: #f7fff9;
-      padding: 0.65rem 1rem;
-      border-radius: 8px;
-      font-size: 0.9rem;
+      padding: 0.7rem 1.1rem;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      line-height: 1.4;
       max-width: min(90vw, 28rem);
-      box-shadow: 0 8px 24px #0004;
+      box-shadow: 0 10px 32px #0005;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s;
@@ -216,40 +327,46 @@
   <div class="wrap">
     <header>
       <div class="brand">
-        <img id="logo" alt="" hidden>
-        <div>
-          <h1>rdoc Reader</h1>
-          <p>One UTF-8 file · any browser · zero CDN</p>
+        <img id="logo" alt="rdoc" hidden>
+        <div class="brand-copy">
+          <h1>rdoc</h1>
+          <p>Calm offline reading for self-contained documents.</p>
         </div>
       </div>
       <div class="actions">
-        <button type="button" class="primary" id="btn-open">Open…</button>
-        <button type="button" id="btn-sample">Open sample</button>
-        <button type="button" id="btn-default">Set as default</button>
-        <button type="button" id="btn-settings">Settings</button>
+        <button type="button" class="ghost" id="btn-default">Default app</button>
+        <button type="button" class="ghost" id="btn-settings">Settings</button>
       </div>
     </header>
 
-    <div>
+    <div class="hero">
       <div class="drop" id="drop" role="region" aria-label="Drop zone for .rdoc files">
-        <h2>Drop a <code>.rdoc</code> here</h2>
-        <p>Or use <kbd>Ctrl</kbd>+<kbd>O</kbd>. Folders are not supported.</p>
-        <p class="hint">A <strong>.rdoc</strong> is a self-contained HTML polyglot — offline, adaptive, integrity-hashed.</p>
-        <p class="hint"><a href="#" id="what-link">What is .rdoc?</a> · <a href="#" id="sample-link">Open shipped sample</a></p>
+        <h2>Open a <code>.rdoc</code></h2>
+        <p class="lede">Drop a file here, or choose one from disk. Folders are not supported.</p>
+        <p>One UTF-8 file · any browser · zero CDN. Integrity-hashed and adaptive.</p>
+        <div class="cta-row">
+          <button type="button" class="primary" id="btn-open">Open…</button>
+          <button type="button" id="btn-sample">Open sample</button>
+        </div>
+        <p class="links">
+          <a href="#" id="what-link">What is .rdoc?</a>
+          <span aria-hidden="true"> · </span>
+          <span>Shortcut <kbd>Ctrl</kbd>+<kbd>O</kbd></span>
+        </p>
       </div>
 
       <div class="queue" id="queue">
-        <h3>Queued files</h3>
+        <h3>Queued</h3>
         <ul id="queue-list"></ul>
       </div>
 
       <section class="recent" aria-label="Recent files">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-top:1.25rem">
+        <div class="recent-head">
           <h3>Recent</h3>
           <button type="button" class="danger" id="btn-clear-recent" hidden>Clear all</button>
         </div>
         <ul id="recent-list"></ul>
-        <p class="empty-recent" id="recent-empty">No recent files yet — local only, never synced.</p>
+        <p class="empty-recent" id="recent-empty">No recent files yet — kept on this device only.</p>
       </section>
     </div>
 
@@ -296,6 +413,7 @@
         open.addEventListener('click', () => api.openPath(it.path));
         const remove = document.createElement('button');
         remove.type = 'button';
+        remove.className = 'danger';
         remove.textContent = 'Remove';
         remove.addEventListener('click', async () => {
           const next = await api.removeRecent(it.path);
@@ -342,10 +460,6 @@
 
     document.getElementById('btn-open').addEventListener('click', () => api.openDialog());
     document.getElementById('btn-sample').addEventListener('click', () => api.openSample());
-    document.getElementById('sample-link').addEventListener('click', (e) => {
-      e.preventDefault();
-      api.openSample();
-    });
     document.getElementById('what-link').addEventListener('click', (e) => {
       e.preventDefault();
       api.openExternal('https://github.com/DokaiiMob/rdoc#why-rdoc');

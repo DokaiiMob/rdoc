@@ -27,8 +27,8 @@ let fileQueue = [];
 let chromeTheme = 'system';
 
 const COLORS = {
-  light: { bg: '#f4faf7', overlay: '#e8f2ec', symbol: '#12241c' },
-  dark: { bg: '#0f1a15', overlay: '#16251e', symbol: '#e8f5ee' },
+  light: { bg: '#f7fff9', overlay: '#eef6f1', symbol: '#1a262f' },
+  dark: { bg: '#0f1a15', overlay: '#15231c', symbol: '#e8f5ee' },
 };
 
 protocol.registerSchemesAsPrivileged([
@@ -118,11 +118,11 @@ function injectShellBadge(html, validation) {
   -webkit-app-region:drag;app-region:drag;
 }
 #rdoc-shell-badge{
-  position:fixed;top:8px;right:12px;z-index:2147483646;
-  font:600 12px/1.2 "Segoe UI",system-ui,sans-serif;
-  color:#f7fff9;background:${bg};padding:6px 10px;border-radius:999px;
-  box-shadow:0 4px 14px #0004;cursor:default;user-select:none;
-  opacity:0.92;letter-spacing:0.01em;
+  position:fixed;top:8px;right:14px;z-index:2147483646;
+  font:600 11px/1.25 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;
+  color:#f7fff9;background:${bg};padding:5px 11px;border-radius:8px;
+  box-shadow:0 2px 10px #0003;cursor:default;user-select:none;
+  opacity:0.9;letter-spacing:0.02em;
   -webkit-app-region:no-drag;app-region:no-drag;
 }
 @media print{#rdoc-shell-badge,#rdoc-shell-drag{display:none!important}}

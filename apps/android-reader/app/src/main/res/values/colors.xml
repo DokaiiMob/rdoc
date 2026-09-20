@@ -3,8 +3,17 @@
     <color name="ic_launcher_background">#F7FFF9</color>
     <color name="brand_green">#0B6E4F</color>
     <color name="brand_green_container">#C8E6D9</color>
+    <color name="brand_mint">#7BC68E</color>
+    <color name="cream">#F7FFF9</color>
+    <color name="paper">#EEF6F1</color>
+    <color name="ink">#1A262F</color>
+    <color name="ink_muted">#4A6358</color>
+    <color name="surface">#F7FFF9</color>
+    <color name="surface_container">#EEF6F1</color>
+    <color name="on_surface">#1A262F</color>
+    <color name="outline_soft">#B7C9BF</color>
     <color name="widget_background">#F7FFF9</color>
     <color name="widget_stroke">#0B6E4F</color>
-    <color name="widget_title">#1A3D32</color>
+    <color name="widget_title">#1A262F</color>
     <color name="widget_subtitle">#0B6E4F</color>
 </resources>

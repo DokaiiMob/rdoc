@@ -72,6 +72,7 @@ Contributions welcome — start with [good first issues](https://github.com/Doka
   - Shared branding kit ([`apps/shared/branding/`](apps/shared/branding/))
   - [GitHub Release v0.2.0](https://github.com/DokaiiMob/rdoc/releases/tag/v0.2.0) (Windows portable + debug APK)
 - [x] **Native readers polish (v0.3.0)** — Open With UX, recent files, integrity badge, theme chrome, DnD queue, empty-state, optional update check, NSIS + file associations + `rdoc://` protocol; Android SAF + Material You + edge-to-edge + predictive back + last-doc widget + Play listing/signing kit; Authenticode still deferred
+- [x] **Native readers redesign (v0.4.0)** — reading-first welcome/empty states, cream/ink surfaces + forest green `#0B6E4F`, refined desktop titlebar/overlay + integrity badge, Android Material 3 quiet chrome + large-touch welcome CTAs, widget polish
 
 ---
 
@@ -178,6 +179,7 @@ Browser remains the canonical reader. Native shells exist so **bare `.rdoc`** op
 - [x] Dark titlebar / system accent on Windows
 - [x] Drag-and-drop polish (multi-file queue, folder reject with clear message)
 - [x] Empty-state: drop zone + sample link + “what is `.rdoc`?” one-liner
+- [x] Reading UX redesign (v0.4.0): comfortable measure, brand-forward welcome, quiet chrome
 
 ### Desktop-specific (`apps/desktop-reader/`)
 

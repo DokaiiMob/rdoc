@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">rdoc Reader</string>
-    <string name="app_subtitle">Responsive Document</string>
+    <string name="app_subtitle">Offline · adaptive</string>
     <string name="menu_open">Open…</string>
     <string name="menu_recent">Recent</string>
+    <string name="menu_about">What is .rdoc?</string>
     <string name="recent_empty">No recent files yet (local only)</string>
     <string name="recent_clear">Clear</string>
     <string name="recent_cleared">Recent cleared</string>
@@ -14,4 +15,5 @@
     <string name="widget_no_doc">rdoc Reader</string>
     <string name="widget_open_app">Tap to open</string>
     <string name="widget_tap_open">Open last document</string>
+    <string name="about_url">https://github.com/DokaiiMob/rdoc#why-rdoc</string>
 </resources>
