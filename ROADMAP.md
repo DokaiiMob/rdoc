@@ -71,7 +71,7 @@ Contributions welcome — start with [good first issues](https://github.com/Doka
   - Android Kotlin WebView ([`apps/android-reader/`](apps/android-reader/)) — UTF-8 load + open/share intents
   - Shared branding kit ([`apps/shared/branding/`](apps/shared/branding/))
   - [GitHub Release v0.2.0](https://github.com/DokaiiMob/rdoc/releases/tag/v0.2.0) (Windows portable + debug APK)
-- [x] **Native readers polish (v0.3.0)** — Open With UX, recent files, integrity badge, theme chrome, DnD queue, empty-state, optional update check, NSIS + file associations + `rdoc://` protocol; Android intent-filters + local recent; Authenticode still deferred
+- [x] **Native readers polish (v0.3.0)** — Open With UX, recent files, integrity badge, theme chrome, DnD queue, empty-state, optional update check, NSIS + file associations + `rdoc://` protocol; Android SAF + Material You + edge-to-edge + predictive back + last-doc widget + Play listing/signing kit; Authenticode still deferred
 
 ---
 
@@ -190,13 +190,13 @@ Browser remains the canonical reader. Native shells exist so **bare `.rdoc`** op
 
 ### Android-specific (`apps/android-reader/`)
 
-- [ ] Release / signed APK + **AAB** for Play Store — deferred from v0.2.0
-- [ ] Play Store listing (screenshots, privacy policy, content rating)
-- [ ] Storage Access Framework (SAF) for durable open from Downloads / Drive
-- [x] Share-target / `ACTION_SEND` polish for `.rdoc` attachments (MIME + pathPattern Open With; Recent via SharedPreferences)
-- [ ] Material You dynamic color + edge-to-edge chrome
-- [ ] Predictive back / gesture navigation with WebView history
-- [ ] Optional home-screen widget (open last doc / pin a file) — nice-to-have
+- [x] Release / signed APK + **AAB** for Play Store — signing via `keystore.properties` / env; docs in [`apps/android-reader/docs/PLAY_RELEASE.md`](apps/android-reader/docs/PLAY_RELEASE.md) (real keystore not in repo)
+- [x] Play Store listing kit (screenshots placeholders, privacy policy draft, content rating notes) — [`apps/android-reader/store/`](apps/android-reader/store/)
+- [x] Storage Access Framework (SAF) for durable open from Downloads / Drive (`ACTION_OPEN_DOCUMENT` + persistable URI permissions)
+- [x] Share-target / `ACTION_SEND` polish for `.rdoc` attachments (MIME + pathPattern Open With; Recent via SharedPreferences; SEND_MULTIPLE)
+- [x] Material You dynamic color + edge-to-edge chrome
+- [x] Predictive back / gesture navigation with WebView history
+- [x] Optional home-screen widget (open last doc) — nice-to-have
 
 ### Cross-platform
 

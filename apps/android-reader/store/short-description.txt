@@ -1,0 +1,1 @@
+Offline reader for bare .rdoc — adaptive HTML, no rename needed.

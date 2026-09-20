@@ -2,4 +2,9 @@
 <resources>
     <color name="ic_launcher_background">#F7FFF9</color>
     <color name="brand_green">#0B6E4F</color>
+    <color name="brand_green_container">#C8E6D9</color>
+    <color name="widget_background">#F7FFF9</color>
+    <color name="widget_stroke">#0B6E4F</color>
+    <color name="widget_title">#1A3D32</color>
+    <color name="widget_subtitle">#0B6E4F</color>
 </resources>

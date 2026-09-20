@@ -16,4 +16,9 @@ apps/android-reader/build/
 apps/android-reader/app/build/
 apps/android-reader/local.properties
 apps/android-reader/.idea/
+apps/android-reader/keystore.properties
+apps/android-reader/*.jks
+apps/android-reader/*.keystore
+apps/android-reader/app/*.jks
+apps/android-reader/app/*.keystore
 *.iml

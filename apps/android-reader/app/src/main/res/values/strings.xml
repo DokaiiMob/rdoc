@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">rdoc Reader</string>
+    <string name="app_subtitle">Responsive Document</string>
+    <string name="menu_open">Open…</string>
+    <string name="menu_recent">Recent</string>
+    <string name="recent_empty">No recent files yet (local only)</string>
+    <string name="recent_clear">Clear</string>
+    <string name="recent_cleared">Recent cleared</string>
+    <string name="err_read">Could not read file</string>
+    <string name="err_permission">No permission to read this file</string>
+    <string name="err_permission_reopen">Access expired — open the file again from Files or Open…</string>
+    <string name="widget_description">Open the last .rdoc you read</string>
+    <string name="widget_no_doc">rdoc Reader</string>
+    <string name="widget_open_app">Tap to open</string>
+    <string name="widget_tap_open">Open last document</string>
 </resources>

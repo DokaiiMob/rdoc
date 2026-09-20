@@ -1,0 +1,18 @@
+rdoc Reader opens bare .rdoc files as self-contained, adaptive HTML documents — no rename to .rdoc.html required.
+
+WHAT IT DOES
+• Open .rdoc from Files, Downloads, Drive, messengers, or Share
+• Read offline — documents are UTF-8 HTML polyglots with an embedded micro-runtime
+• Keep a local recent list (device only; clear anytime)
+• Optional home-screen widget to reopen the last document
+
+PRIVACY
+Reading does not require a network connection. The app processes files you choose on-device. See the in-repo privacy policy draft for details.
+
+ABOUT .RDOC
+A .rdoc is a Responsive Document: one file that adapts layout to the viewport, carries integrity metadata, and opens in any modern browser. This reader is a thin WebView shell for Android so the system can Open With / Always open .rdoc attachments.
+
+REQUIREMENTS
+Android 7.0 (API 24) and up.
+
+Open source — part of the rdoc project (MIT).

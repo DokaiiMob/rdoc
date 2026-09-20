@@ -2,6 +2,8 @@
 
 Minimal Kotlin + WebView app that opens bare `.rdoc` files as HTML (UTF-8) without renaming to `.rdoc.html`.
 
+**Version:** 0.3.0 · minSdk 24 · targetSdk 35
+
 ## Requirements
 
 - Android Studio Ladybug+ **or** JDK 17+ and Android SDK (API 35)
@@ -28,11 +30,26 @@ APK path:
 app\build\outputs\apk\debug\app-debug.apk
 ```
 
+## Release / Play Store (signed APK + AAB)
+
+Unsigned release builds work without a keystore (smoke tests only). For Play upload, configure signing and run `bundleRelease` — see **[`docs/PLAY_RELEASE.md`](docs/PLAY_RELEASE.md)** and [`keystore.properties.example`](keystore.properties.example).
+
+Listing copy, privacy draft, rating notes, screenshot sizes: **[`store/`](store/)**.
+
+```powershell
+.\gradlew.bat assembleRelease
+.\gradlew.bat bundleRelease
+```
+
 ## Behavior
 
-- **Open…** menu → system file picker
-- **Recent** menu → local SharedPreferences list (URI + title; clearable; no cloud)
-- `ACTION_VIEW` / `ACTION_SEND` for `.rdoc`, `text/html`, `application/vnd.rdoc+html`, `application/octet-stream`, `*/*` (pathPattern)
+- **Open…** → Storage Access Framework (`ACTION_OPEN_DOCUMENT`) with persistable read grants when the provider allows
+- **Recent** → local SharedPreferences (URI + title; clearable; no cloud); reopen uses persisted URI permissions when still valid
+- `ACTION_VIEW` / `ACTION_SEND` / `ACTION_SEND_MULTIPLE` for `.rdoc`, HTML MIME types, octet-stream, and `pathPattern`
+- Material 3 + **Material You** dynamic color (API 31+ when available)
+- **Edge-to-edge** system bars; WebView padded for navigation gestures
+- **Predictive back:** WebView `canGoBack()` then finish (`OnBackPressedDispatcher` + `enableOnBackInvokedCallback`)
+- **Home-screen widget:** “Open last document” (or launch app if none)
 - Loads bytes as UTF-8 via `WebView.loadDataWithBaseURL(..., "text/html", "utf-8", ...)`
 - JavaScript enabled for the document micro-runtime
 
@@ -43,11 +60,6 @@ app\build\outputs\apk\debug\app-debug.apk
 3. Intent-filters cover `content://` + `file://`, MIME types, and `pathPattern` for `*.rdoc` / `*.rdoc.html` (including nested path segments)
 
 If another app remains default: long-press the file → Open with → rdoc Reader → Always, or clear defaults under system App info.
-
-## Deferred
-
-- Play Store signed APK / AAB
-- Full Storage Access Framework polish beyond persistable URI grants
 
 ## Icon
 
