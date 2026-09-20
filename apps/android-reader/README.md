@@ -31,9 +31,23 @@ app\build\outputs\apk\debug\app-debug.apk
 ## Behavior
 
 - **Open…** menu → system file picker
-- `ACTION_VIEW` / `ACTION_SEND` for `.rdoc`, `text/html`, `application/vnd.rdoc+html`, `*/*`
+- **Recent** menu → local SharedPreferences list (URI + title; clearable; no cloud)
+- `ACTION_VIEW` / `ACTION_SEND` for `.rdoc`, `text/html`, `application/vnd.rdoc+html`, `application/octet-stream`, `*/*` (pathPattern)
 - Loads bytes as UTF-8 via `WebView.loadDataWithBaseURL(..., "text/html", "utf-8", ...)`
 - JavaScript enabled for the document micro-runtime
+
+### “Always open with rdoc Reader”
+
+1. Open a `.rdoc` from Files / Downloads / a messenger
+2. Choose **rdoc Reader** → **Always** (wording varies by OEM)
+3. Intent-filters cover `content://` + `file://`, MIME types, and `pathPattern` for `*.rdoc` / `*.rdoc.html` (including nested path segments)
+
+If another app remains default: long-press the file → Open with → rdoc Reader → Always, or clear defaults under system App info.
+
+## Deferred
+
+- Play Store signed APK / AAB
+- Full Storage Access Framework polish beyond persistable URI grants
 
 ## Icon
 

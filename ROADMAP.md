@@ -71,7 +71,7 @@ Contributions welcome — start with [good first issues](https://github.com/Doka
   - Android Kotlin WebView ([`apps/android-reader/`](apps/android-reader/)) — UTF-8 load + open/share intents
   - Shared branding kit ([`apps/shared/branding/`](apps/shared/branding/))
   - [GitHub Release v0.2.0](https://github.com/DokaiiMob/rdoc/releases/tag/v0.2.0) (Windows portable + debug APK)
-  - Deferred for later: code-signed Windows builds, Play Store release APK/AAB, full OS file-association installers
+- [x] **Native readers polish (v0.3.0)** — Open With UX, recent files, integrity badge, theme chrome, DnD queue, empty-state, optional update check, NSIS + file associations + `rdoc://` protocol; Android intent-filters + local recent; Authenticode still deferred
 
 ---
 
@@ -171,29 +171,29 @@ Browser remains the canonical reader. Native shells exist so **bare `.rdoc`** op
 
 ### Near-term improvements
 
-- [ ] Open With / “always open `.rdoc` with rdoc Reader” UX polish (Windows + Android)
-- [ ] Recent files list (local only; no cloud)
-- [ ] Sync title / TOC chrome with document theme (light/dark)
-- [ ] Validate / `contentHash` status badge in shell chrome
-- [ ] Dark titlebar / system accent on Windows
-- [ ] Drag-and-drop polish (multi-file queue, folder reject with clear message)
-- [ ] Empty-state: drop zone + sample link + “what is `.rdoc`?” one-liner
+- [x] Open With / “always open `.rdoc` with rdoc Reader” UX polish (Windows + Android)
+- [x] Recent files list (local only; no cloud)
+- [x] Sync title / TOC chrome with document theme (light/dark)
+- [x] Validate / `contentHash` status badge in shell chrome
+- [x] Dark titlebar / system accent on Windows
+- [x] Drag-and-drop polish (multi-file queue, folder reject with clear message)
+- [x] Empty-state: drop zone + sample link + “what is `.rdoc`?” one-liner
 
 ### Desktop-specific (`apps/desktop-reader/`)
 
-- [ ] Auto-update channel (GitHub Releases; optional, off by default)
-- [ ] NSIS / MSI installers with **file association** for `.rdoc` / `.rdoc.html`
+- [x] Auto-update channel (GitHub Releases; optional, off by default)
+- [x] NSIS / MSI installers with **file association** for `.rdoc` / `.rdoc.html` (MSI when WiX available)
 - [ ] macOS (`.dmg` / `.app`) and Linux (AppImage / `.deb`) builds
-- [ ] Code-signed Windows builds (Authenticode) — deferred from v0.2.0
-- [ ] Protocol / deep-link handler polish (`rdoc://` open path)
-- [ ] Portable vs installed edition docs (PATH, default app, uninstaller)
+- [ ] Code-signed Windows builds (Authenticode) — deferred; signing hook stubbed, unsigned releases documented
+- [x] Protocol / deep-link handler polish (`rdoc://` open path)
+- [x] Portable vs installed edition docs (PATH, default app, uninstaller)
 
 ### Android-specific (`apps/android-reader/`)
 
 - [ ] Release / signed APK + **AAB** for Play Store — deferred from v0.2.0
 - [ ] Play Store listing (screenshots, privacy policy, content rating)
 - [ ] Storage Access Framework (SAF) for durable open from Downloads / Drive
-- [ ] Share-target / `ACTION_SEND` polish for `.rdoc` attachments
+- [x] Share-target / `ACTION_SEND` polish for `.rdoc` attachments (MIME + pathPattern Open With; Recent via SharedPreferences)
 - [ ] Material You dynamic color + edge-to-edge chrome
 - [ ] Predictive back / gesture navigation with WebView history
 - [ ] Optional home-screen widget (open last doc / pin a file) — nice-to-have

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; style-src 'unsafe-inline'; img-src data: blob:; script-src 'unsafe-inline'; connect-src 'none'; font-src 'none'; object-src 'none'; media-src 'none'">
+  <title>Minimal</title>
+  <script type="application/rdoc+json" id="rdoc-manifest">
+{
+  "format": "rdoc",
+  "version": "1.0.0",
+  "title": "Minimal",
+  "author": "Anonymous",
+  "created": "2026-09-20T00:00:00.000Z",
+  "lang": "en",
+  "contentHash": "6a4849caff3c09111698694dd6be871d9c90bc4c9872e2ff776315c79e92c428",
+  "readingMinutes": 1,
+  "wordCount": 2
+}
+  </script>
+</head>
+<body>
+  <article id="rdoc-content">
+  <h1>Minimal</h1>
+  <p>Hello, RDOC.</p>
+</article>
+</body>
+</html>

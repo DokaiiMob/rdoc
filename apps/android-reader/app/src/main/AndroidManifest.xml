@@ -20,7 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Open bare .rdoc / .rdoc.html via content:// -->
+            <!-- MIME-typed VIEW (Files / Downloads / “Open with”) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -28,19 +28,26 @@
                 <data android:scheme="content" />
                 <data android:scheme="file" />
                 <data android:mimeType="application/vnd.rdoc+html" />
+                <data android:mimeType="application/rdoc+html" />
                 <data android:mimeType="text/html" />
                 <data android:mimeType="text/plain" />
-                <data android:mimeType="*/*" />
+                <data android:mimeType="application/octet-stream" />
             </intent-filter>
 
+            <!-- Extension pathPatterns (Android treats '.' as any-char; escape as \\.) -->
+            <!-- Multiple patterns cover nested Downloads paths and .rdoc.html -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.rdoc" />
+                <data android:scheme="content" android:host="*" android:mimeType="*/*" android:pathPattern=".*\\.rdoc" />
+                <data android:scheme="content" android:host="*" android:mimeType="*/*" android:pathPattern=".*\\.rdoc.html" />
+                <data android:scheme="content" android:host="*" android:mimeType="*/*" android:pathPattern=".*\\..*\\.rdoc" />
+                <data android:scheme="content" android:host="*" android:mimeType="*/*" android:pathPattern=".*\\..*\\.rdoc.html" />
                 <data android:scheme="file" android:host="*" android:pathPattern=".*\\.rdoc" />
-                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.rdoc.html" />
                 <data android:scheme="file" android:host="*" android:pathPattern=".*\\.rdoc.html" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\.rdoc" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\.rdoc.html" />
             </intent-filter>
 
             <intent-filter>
@@ -48,6 +55,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/html" />
                 <data android:mimeType="text/plain" />
+                <data android:mimeType="application/vnd.rdoc+html" />
                 <data android:mimeType="*/*" />
             </intent-filter>
         </activity>

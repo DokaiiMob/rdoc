@@ -4,6 +4,8 @@ Minimal **Electron** app that opens bare `.rdoc` (and `.rdoc.html`) files as HTM
 
 The file is served over a custom `rdoc://` protocol with `Content-Type: text/html`, so Chromium applies HTML semantics despite the `.rdoc` extension.
 
+**Version:** 0.3.0
+
 ## Requirements
 
 - Node.js 18+
@@ -19,39 +21,93 @@ npm start
 
 Open a document:
 
-- **File → Open** (`Ctrl+O`)
-- Drag & drop a `.rdoc` onto the window
-- CLI: `npm start -- ..\..\test_assoc.rdoc` (or pass a path after `electron .`)
+- Welcome screen → **Open…** / drop zone (`Ctrl+O`)
+- Drag & drop one or more `.rdoc` files (first opens; extras go to Recent / queue)
+- **Open sample** (ships `sample.rdoc`)
+- CLI: `npm start -- ..\..\test_assoc.rdoc`
+- Deep link: `rdoc://open?path=C:\path\to\file.rdoc`
 
-## Build Windows portable
+Folders are rejected with a clear message.
+
+## Features (0.3.0)
+
+| Feature | Notes |
+| --- | --- |
+| Recent files | Local JSON under Electron `userData` — clear / remove; no cloud |
+| Integrity badge | ✓/✗ `contentHash` (+ CSP / manifest) in a fixed shell chip |
+| Theme chrome | Mirrors document `data-theme` / system; Windows title-bar overlay + mica |
+| Set as default | In-app help + Windows Default Apps deep link |
+| Auto-update check | Optional GitHub Releases probe — **OFF by default** (Settings) |
+| Protocol | `rdoc://` registered; second-instance focuses + opens path |
+
+## Build Windows installers
 
 ```powershell
 cd apps/desktop-reader
 npm install
-npm run pack
+npm run pack          # portable + NSIS
+# npm run pack:msi    # MSI (optional; needs WiX on PATH)
+# npm run pack:all    # portable + NSIS + MSI
 ```
 
-Output (typical):
+Typical output under `dist-pack/`:
 
-- `dist-pack/rdoc-reader-0.2.0-win-x64-portable.exe`
+- `rdoc-reader-0.3.0-win-x64-portable.exe` — **portable**
+- `rdoc-reader-0.3.0-win-x64-setup.exe` — **NSIS** (file associations + Start Menu)
+- `rdoc-reader-0.3.0-win-x64.msi` — **MSI** (when WiX is available)
 
-If code signing / portable packaging fails:
+If packaging fails partway:
 
 ```powershell
 npm run pack:dir
 ```
 
-Then zip the folder under `dist-pack/win-unpacked/`.
+Then zip `dist-pack/win-unpacked/`.
 
-## OS file association (optional)
+### Code signing (Authenticode) — deferred
 
-Point Windows “Open with” / ProgID at the portable exe:
+**Do not fake signing.** Release binaries are currently **unsigned**.
+
+When a real certificate is available:
+
+1. Set `CSC_LINK` / `CSC_KEY_PASSWORD` (or `WIN_CSC_*`).
+2. In `package.json` → `build.win`, set `"signAndEditExecutable": true`.
+3. Optionally point `"sign": "./scripts/sign-windows.js"` (hook refuses to run without certs).
+
+See comments in [`scripts/sign-windows.js`](scripts/sign-windows.js).
+
+## Portable vs installed
+
+| | **Portable** | **NSIS / MSI installed** |
+| --- | --- | --- |
+| Location | Anywhere you copy the `.exe` | `%LOCALAPPDATA%\Programs\rdoc Reader` (typical) |
+| PATH | Not added | Not added (use Start Menu / file association) |
+| Default app / associations | Manual “Open with → Always” | Registered for `.rdoc` / `.rdoc.html` + `rdoc://` at install |
+| Uninstaller | Delete the exe | Apps & features / uninstaller removes app; `userData` kept unless you delete it |
+| Updates | Replace the exe from GitHub Releases | Install newer setup (or replace portable) |
+| Protocol `rdoc://` | May work after one run via `setAsDefaultProtocolClient` | Registered by electron-builder |
+
+Recent files and settings live in Electron `userData` for both editions (not inside the portable exe).
+
+## OS file association
+
+**Installed:** use the NSIS/MSI builder targets — associations are declared in `package.json` `build.fileAssociations`.
+
+**Portable / from source:** File → **Set as default app…**, or:
 
 ```text
-"C:\path\to\rdoc-reader-0.2.0-win-x64-portable.exe" "%1"
+"C:\path\to\rdoc-reader-0.3.0-win-x64-portable.exe" "%1"
 ```
 
-The CLI still ships `rdoc associate` for browser-based opening; this reader is an alternative for bare `.rdoc` without renaming.
+The CLI still ships `rdoc associate` for **browser-based** opening; this reader is the native alternative for bare `.rdoc`.
+
+## Deep links
+
+```text
+rdoc://open?path=C:\docs\note.rdoc
+```
+
+A second instance forwards the path to the running window (single-instance lock).
 
 ## Icon / branding
 

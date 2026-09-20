@@ -244,8 +244,8 @@ Open **`.rdoc`** without renaming to `.html` — WebView / Electron loads the fi
 
 | Reader | Path | Download |
 | --- | --- | --- |
-| Windows (portable) | [`apps/desktop-reader/`](apps/desktop-reader/) | [Release assets](https://github.com/DokaiiMob/rdoc/releases/tag/v0.2.0) |
-| Android (APK) | [`apps/android-reader/`](apps/android-reader/) | [Release assets](https://github.com/DokaiiMob/rdoc/releases/tag/v0.2.0) |
+| Windows (portable + NSIS) | [`apps/desktop-reader/`](apps/desktop-reader/) | [Release v0.3.0](https://github.com/DokaiiMob/rdoc/releases/tag/v0.3.0) (unsigned; Authenticode deferred) |
+| Android (APK) | [`apps/android-reader/`](apps/android-reader/) | [Release assets](https://github.com/DokaiiMob/rdoc/releases) |
 
 Brand mark: [`apps/shared/branding/`](apps/shared/branding/)
 

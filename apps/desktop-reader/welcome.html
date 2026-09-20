@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>rdoc Reader</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg0: #f4faf7;
+      --bg1: #e2f0e9;
+      --ink: #12241c;
+      --muted: #3d5a4c;
+      --accent: #0b6e4f;
+      --accent-ink: #f7fff9;
+      --line: color-mix(in srgb, var(--ink) 14%, transparent);
+      --drop: color-mix(in srgb, var(--accent) 12%, transparent);
+      --danger: #b42318;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg0: #0f1a15;
+        --bg1: #16251e;
+        --ink: #e8f5ee;
+        --muted: #9bb5a6;
+        --line: color-mix(in srgb, var(--ink) 18%, transparent);
+        --drop: color-mix(in srgb, var(--accent) 22%, transparent);
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #0b6e4f33, transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, #1a3d3244, transparent 50%),
+        linear-gradient(165deg, var(--bg0), var(--bg1));
+    }
+    .wrap {
+      min-height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: 1.25rem 1.5rem 1.5rem;
+      gap: 1rem;
+      max-width: 52rem;
+      margin: 0 auto;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      -webkit-app-region: drag;
+      padding-top: 0.35rem;
+    }
+    header button, header .actions { -webkit-app-region: no-drag; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand img {
+      width: 48px; height: 48px; border-radius: 22%;
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+      font-weight: 650;
+    }
+    .brand p {
+      margin: 0.15rem 0 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    button, .btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, Canvas 70%, transparent);
+      color: var(--ink);
+      border-radius: 8px;
+      padding: 0.45rem 0.85rem;
+      font: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    button.primary {
+      background: var(--accent);
+      color: var(--accent-ink);
+      border-color: transparent;
+    }
+    button:hover { filter: brightness(1.05); }
+    button.danger { color: var(--danger); }
+    .drop {
+      border: 2px dashed color-mix(in srgb, var(--accent) 45%, var(--line));
+      border-radius: 16px;
+      background: var(--drop);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      transition: border-color 0.15s, background 0.15s, transform 0.15s;
+    }
+    .drop.dragover {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 22%, transparent);
+      transform: scale(1.01);
+    }
+    .drop h2 {
+      margin: 0 0 0.4rem;
+      font-size: 1.2rem;
+    }
+    .drop p {
+      margin: 0.35rem 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .hint {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin: 0.75rem 0 0;
+    }
+    kbd {
+      font: 0.85em ui-monospace, Consolas, monospace;
+      border: 1px solid var(--line);
+      border-bottom-width: 2px;
+      border-radius: 4px;
+      padding: 0.05em 0.35em;
+    }
+    section.recent {
+      margin-top: 0.25rem;
+    }
+    section.recent h3 {
+      margin: 0 0 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.35rem;
+    }
+    li.recent-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.55rem 0.7rem;
+      background: color-mix(in srgb, Canvas 55%, transparent);
+    }
+    li.recent-item button.open {
+      text-align: left;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      width: 100%;
+    }
+    li.recent-item .title {
+      font-weight: 600;
+      display: block;
+    }
+    li.recent-item .path {
+      font-size: 0.78rem;
+      color: var(--muted);
+      word-break: break-all;
+    }
+    .empty-recent {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin: 0;
+    }
+    .queue {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.65rem 0.8rem;
+      background: color-mix(in srgb, Canvas 55%, transparent);
+      display: none;
+    }
+    .queue.visible { display: block; }
+    .queue h3 { margin: 0 0 0.4rem; font-size: 0.9rem; }
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    footer a { color: var(--accent); }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 1.25rem;
+      transform: translateX(-50%);
+      background: #1a3d32;
+      color: #f7fff9;
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      max-width: min(90vw, 28rem);
+      box-shadow: 0 8px 24px #0004;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 20;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <img id="logo" alt="" hidden>
+        <div>
+          <h1>rdoc Reader</h1>
+          <p>One UTF-8 file · any browser · zero CDN</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="primary" id="btn-open">Open…</button>
+        <button type="button" id="btn-sample">Open sample</button>
+        <button type="button" id="btn-default">Set as default</button>
+        <button type="button" id="btn-settings">Settings</button>
+      </div>
+    </header>
+
+    <div>
+      <div class="drop" id="drop" role="region" aria-label="Drop zone for .rdoc files">
+        <h2>Drop a <code>.rdoc</code> here</h2>
+        <p>Or use <kbd>Ctrl</kbd>+<kbd>O</kbd>. Folders are not supported.</p>
+        <p class="hint">A <strong>.rdoc</strong> is a self-contained HTML polyglot — offline, adaptive, integrity-hashed.</p>
+        <p class="hint"><a href="#" id="what-link">What is .rdoc?</a> · <a href="#" id="sample-link">Open shipped sample</a></p>
+      </div>
+
+      <div class="queue" id="queue">
+        <h3>Queued files</h3>
+        <ul id="queue-list"></ul>
+      </div>
+
+      <section class="recent" aria-label="Recent files">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-top:1.25rem">
+          <h3>Recent</h3>
+          <button type="button" class="danger" id="btn-clear-recent" hidden>Clear all</button>
+        </div>
+        <ul id="recent-list"></ul>
+        <p class="empty-recent" id="recent-empty">No recent files yet — local only, never synced.</p>
+      </section>
+    </div>
+
+    <footer>
+      <span id="version">rdoc Reader</span>
+      <span><a href="https://github.com/DokaiiMob/rdoc" id="repo-link">GitHub</a></span>
+    </footer>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script>
+    const api = window.rdocDesktop;
+    const drop = document.getElementById('drop');
+    const toast = document.getElementById('toast');
+    let toastTimer = null;
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 4200);
+    }
+
+    function renderRecent(items) {
+      const list = document.getElementById('recent-list');
+      const empty = document.getElementById('recent-empty');
+      const clearBtn = document.getElementById('btn-clear-recent');
+      list.innerHTML = '';
+      if (!items || !items.length) {
+        empty.hidden = false;
+        clearBtn.hidden = true;
+        return;
+      }
+      empty.hidden = true;
+      clearBtn.hidden = false;
+      for (const it of items) {
+        const li = document.createElement('li');
+        li.className = 'recent-item';
+        const open = document.createElement('button');
+        open.type = 'button';
+        open.className = 'open';
+        open.innerHTML = `<span class="title"></span><span class="path"></span>`;
+        open.querySelector('.title').textContent = it.title || it.path;
+        open.querySelector('.path').textContent = it.path;
+        open.addEventListener('click', () => api.openPath(it.path));
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.textContent = 'Remove';
+        remove.addEventListener('click', async () => {
+          const next = await api.removeRecent(it.path);
+          renderRecent(next);
+        });
+        li.append(open, remove);
+        list.appendChild(li);
+      }
+    }
+
+    function renderQueue(paths) {
+      const box = document.getElementById('queue');
+      const list = document.getElementById('queue-list');
+      list.innerHTML = '';
+      if (!paths || !paths.length) {
+        box.classList.remove('visible');
+        return;
+      }
+      box.classList.add('visible');
+      for (const p of paths) {
+        const li = document.createElement('li');
+        li.className = 'recent-item';
+        const open = document.createElement('button');
+        open.type = 'button';
+        open.className = 'open';
+        open.textContent = p;
+        open.addEventListener('click', () => api.openPath(p));
+        li.appendChild(open);
+        list.appendChild(li);
+      }
+    }
+
+    async function refresh() {
+      const state = await api.getWelcomeState();
+      document.getElementById('version').textContent = `rdoc Reader ${state.version}`;
+      if (state.logoDataUrl) {
+        const img = document.getElementById('logo');
+        img.src = state.logoDataUrl;
+        img.hidden = false;
+      }
+      renderRecent(state.recent);
+      renderQueue(state.queue);
+    }
+
+    document.getElementById('btn-open').addEventListener('click', () => api.openDialog());
+    document.getElementById('btn-sample').addEventListener('click', () => api.openSample());
+    document.getElementById('sample-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      api.openSample();
+    });
+    document.getElementById('what-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      api.openExternal('https://github.com/DokaiiMob/rdoc#why-rdoc');
+    });
+    document.getElementById('repo-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      api.openExternal('https://github.com/DokaiiMob/rdoc');
+    });
+    document.getElementById('btn-default').addEventListener('click', () => api.showDefaultHelp());
+    document.getElementById('btn-settings').addEventListener('click', () => api.showSettings());
+    document.getElementById('btn-clear-recent').addEventListener('click', async () => {
+      const next = await api.clearRecent();
+      renderRecent(next);
+    });
+
+    ['dragenter', 'dragover'].forEach((ev) => {
+      drop.addEventListener(ev, (e) => {
+        e.preventDefault();
+        drop.classList.add('dragover');
+      });
+    });
+    ['dragleave', 'drop'].forEach((ev) => {
+      drop.addEventListener(ev, () => drop.classList.remove('dragover'));
+    });
+    drop.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const files = [...(e.dataTransfer?.files || [])];
+      const paths = files.map((f) => f.path).filter(Boolean);
+      if (paths.length) api.openDroppedPaths(paths);
+    });
+
+    api.onToast((_e, msg) => showToast(msg));
+    api.onWelcomeRefresh(() => refresh());
+    refresh();
+  </script>
+</body>
+</html>

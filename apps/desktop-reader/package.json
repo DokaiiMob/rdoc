@@ -1,29 +1,66 @@
 {
   "name": "rdoc-desktop-reader",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Minimal Electron reader for bare .rdoc HTML polyglot files",
   "main": "main.js",
   "author": "DokaiiMob",
   "license": "MIT",
   "scripts": {
     "start": "electron .",
-    "pack": "electron-builder --win portable --x64",
-    "pack:dir": "electron-builder --win dir --x64"
+    "pack": "electron-builder --win portable nsis --x64",
+    "pack:portable": "electron-builder --win portable --x64",
+    "pack:nsis": "electron-builder --win nsis --x64",
+    "pack:msi": "electron-builder --win msi --x64",
+    "pack:dir": "electron-builder --win dir --x64",
+    "pack:all": "electron-builder --win portable nsis msi --x64"
   },
   "build": {
     "appId": "com.rdoc.desktop-reader",
     "productName": "rdoc Reader",
+    "copyright": "Copyright © DokaiiMob / rdoc contributors",
     "directories": {
       "output": "dist-pack"
     },
     "files": [
       "main.js",
       "preload.js",
+      "welcome.html",
+      "sample.rdoc",
+      "lib/**/*",
       "package.json",
       "icon.png",
       "icon.ico"
     ],
+    "extraMetadata": {
+      "main": "main.js"
+    },
     "icon": "icon.ico",
+    "protocols": [
+      {
+        "name": "rdoc",
+        "schemes": [
+          "rdoc"
+        ]
+      }
+    ],
+    "fileAssociations": [
+      {
+        "ext": "rdoc",
+        "name": "rdoc Document",
+        "description": "Responsive offline document (.rdoc)",
+        "mimeType": "application/vnd.rdoc+html",
+        "role": "Viewer",
+        "icon": "icon.ico"
+      },
+      {
+        "ext": "rdoc.html",
+        "name": "rdoc HTML Document",
+        "description": "Responsive offline document (.rdoc.html)",
+        "mimeType": "text/html",
+        "role": "Viewer",
+        "icon": "icon.ico"
+      }
+    ],
     "win": {
       "icon": "icon.ico",
       "target": [
@@ -32,10 +69,33 @@
           "arch": [
             "x64"
           ]
+        },
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "artifactName": "rdoc-reader-${version}-win-x64.${ext}",
-      "signAndEditExecutable": false
+      "signAndEditExecutable": false,
+      "verifyUpdateCodeSignature": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "rdoc Reader",
+      "perMachine": false,
+      "deleteAppDataOnUninstall": false,
+      "artifactName": "rdoc-reader-${version}-win-x64-setup.${ext}",
+      "include": null
+    },
+    "msi": {
+      "artifactName": "rdoc-reader-${version}-win-x64.${ext}",
+      "createDesktopShortcut": true,
+      "runAfterFinish": false
     },
     "portable": {
       "artifactName": "rdoc-reader-${version}-win-x64-portable.${ext}"
