@@ -15,18 +15,19 @@ Contributions welcome — start with [good first issues](https://github.com/Doka
 4. [Format & specification](#format--specification)
 5. [Compiler & CLI](#compiler--cli)
 6. [Reader UX](#reader-ux)
-7. [Security & trust](#security--trust)
-8. [Ecosystem & integrations](#ecosystem--integrations)
-9. [Authoring & PKM](#authoring--pkm)
-10. [Distribution & discovery](#distribution--discovery)
-11. [Accessibility & i18n](#accessibility--i18n)
-12. [Performance & packaging](#performance--packaging)
-13. [Academic & long-form](#academic--long-form)
-14. [Legal / business documents](#legal--business-documents)
-15. [Community & governance](#community--governance)
-16. [Research / speculative](#research--speculative)
-17. [Non-goals (for now)](#non-goals-for-now)
-18. [How we prioritize](#how-we-prioritize)
+7. [Native readers (desktop + Android)](#native-readers-desktop--android)
+8. [Security & trust](#security--trust)
+9. [Ecosystem & integrations](#ecosystem--integrations)
+10. [Authoring & PKM](#authoring--pkm)
+11. [Distribution & discovery](#distribution--discovery)
+12. [Accessibility & i18n](#accessibility--i18n)
+13. [Performance & packaging](#performance--packaging)
+14. [Academic & long-form](#academic--long-form)
+15. [Legal / business documents](#legal--business-documents)
+16. [Community & governance](#community--governance)
+17. [Research / speculative](#research--speculative)
+18. [Non-goals (for now)](#non-goals-for-now)
+19. [How we prioritize](#how-we-prioritize)
 
 ---
 
@@ -65,6 +66,12 @@ Contributions welcome — start with [good first issues](https://github.com/Doka
 - [x] Shell completions (bash/zsh/fish/powershell)
 - [x] Docker + Homebrew/Scoop/Winget stubs + publishing notes
 - [x] English canonical README + `README.ru.md` policy
+- [x] **Native readers (v0.2.0)** — open bare `.rdoc` without renaming:
+  - Desktop Electron shell ([`apps/desktop-reader/`](apps/desktop-reader/)) — HTML semantics via custom protocol
+  - Android Kotlin WebView ([`apps/android-reader/`](apps/android-reader/)) — UTF-8 load + open/share intents
+  - Shared branding kit ([`apps/shared/branding/`](apps/shared/branding/))
+  - [GitHub Release v0.2.0](https://github.com/DokaiiMob/rdoc/releases/tag/v0.2.0) (Windows portable + debug APK)
+  - Deferred for later: code-signed Windows builds, Play Store release APK/AAB, full OS file-association installers
 
 ---
 
@@ -153,6 +160,58 @@ Contributions welcome — start with [good first issues](https://github.com/Doka
 - [ ] Custom accent color via manifest `themeAccent` (CSS variable)
 - [ ] “Copy plain text” / “Copy citation” buttons
 - [ ] Print stylesheet presets: A4 / Letter / compact
+
+---
+
+## Native readers (desktop + Android)
+
+Browser remains the canonical reader. Native shells exist so **bare `.rdoc`** opens with HTML semantics without renaming to `.rdoc.html`.
+
+**Shipped (v0.2.0):** Electron desktop reader, Android WebView reader, shared branding — see [Shipped](#shipped-mvp--public-hardening) and [release notes](https://github.com/DokaiiMob/rdoc/releases/tag/v0.2.0).
+
+### Near-term improvements
+
+- [ ] Open With / “always open `.rdoc` with rdoc Reader” UX polish (Windows + Android)
+- [ ] Recent files list (local only; no cloud)
+- [ ] Sync title / TOC chrome with document theme (light/dark)
+- [ ] Validate / `contentHash` status badge in shell chrome
+- [ ] Dark titlebar / system accent on Windows
+- [ ] Drag-and-drop polish (multi-file queue, folder reject with clear message)
+- [ ] Empty-state: drop zone + sample link + “what is `.rdoc`?” one-liner
+
+### Desktop-specific (`apps/desktop-reader/`)
+
+- [ ] Auto-update channel (GitHub Releases; optional, off by default)
+- [ ] NSIS / MSI installers with **file association** for `.rdoc` / `.rdoc.html`
+- [ ] macOS (`.dmg` / `.app`) and Linux (AppImage / `.deb`) builds
+- [ ] Code-signed Windows builds (Authenticode) — deferred from v0.2.0
+- [ ] Protocol / deep-link handler polish (`rdoc://` open path)
+- [ ] Portable vs installed edition docs (PATH, default app, uninstaller)
+
+### Android-specific (`apps/android-reader/`)
+
+- [ ] Release / signed APK + **AAB** for Play Store — deferred from v0.2.0
+- [ ] Play Store listing (screenshots, privacy policy, content rating)
+- [ ] Storage Access Framework (SAF) for durable open from Downloads / Drive
+- [ ] Share-target / `ACTION_SEND` polish for `.rdoc` attachments
+- [ ] Material You dynamic color + edge-to-edge chrome
+- [ ] Predictive back / gesture navigation with WebView history
+- [ ] Optional home-screen widget (open last doc / pin a file) — nice-to-have
+
+### Cross-platform
+
+- [ ] Keep [`apps/shared/branding/`](apps/shared/branding/) as the single icon/logo source of truth
+- [ ] iOS / iPadOS reader (WKWebView) — later; not blocking desktop/Android polish
+- [ ] Research Flutter or Tauri migration (shared UI vs Electron/Kotlin size tradeoffs)
+- [ ] Sync annotations with sidecar `.rdoc.ann.json` (local files; optional later sync)
+- [ ] Print / export PDF from the native shell (delegate to document print CSS)
+
+### Distribution
+
+- [ ] winget / Scoop / Homebrew casks for the **reader** (CLI packaging already stubbed)
+- [ ] F-Droid recipe (reproducible debug→release path)
+- [ ] GitHub Releases automation: tagged builds for Windows portable, macOS, Linux, Android APK/AAB
+- [ ] Checksums + SBOM notes on each reader asset
 
 ---
 
@@ -295,7 +354,7 @@ Contributions welcome — start with [good first issues](https://github.com/Doka
 - [ ] CRDT annotations syncing across devices **without** a required vendor server
 - [ ] Partial encryption of sections (age/age-plugin) while keeping public abstract
 - [ ] “Living document” with signed update chain (hash-linked manifests)
-- [ ] Native OS handlers beyond browser (minimal WebView shells)
+- [x] Native OS handlers beyond browser (minimal WebView shells) — MVP shipped in v0.2.0; backlog under [Native readers](#native-readers-desktop--android)
 - [ ] Hardware e-ink optimized CSS profile
 - [ ] `.rdoc` as a teaching format for digital literacy (HTML you can hold)
 - [ ] Formal verification of canonicalize(hash) properties
