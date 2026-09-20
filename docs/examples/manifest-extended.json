@@ -14,6 +14,8 @@
   "license": "MIT",
   "rights": "© 2026 Example Org. Freely redistributable under MIT.",
   "themeAccent": "#0b6e4f",
+  "tags": ["offline", "markdown", "polyglot"],
+  "authorKeys": "https://example.org/.well-known/rdoc-keys.json",
   "signature": {
     "alg": "Ed25519",
     "publicKey": "<base64-raw-32-byte-public-key>",

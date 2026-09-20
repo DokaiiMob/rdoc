@@ -82,6 +82,37 @@
     "themeAccent": {
       "type": "string",
       "description": "Optional CSS color for reader accent (e.g. \"#0b6e4f\"); sets --accent."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Optional free-form tags (often from YAML front-matter)."
+    },
+    "signature": {
+      "type": "object",
+      "description": "Optional Ed25519 signature over contentHash (RFC 0002 Draft).",
+      "additionalProperties": true,
+      "required": ["alg", "publicKey", "sig"],
+      "properties": {
+        "alg": { "type": "string", "const": "Ed25519" },
+        "publicKey": {
+          "type": "string",
+          "description": "Standard Base64 of the raw 32-byte Ed25519 public key."
+        },
+        "sig": {
+          "type": "string",
+          "description": "Standard Base64 of the 64-byte Ed25519 signature."
+        },
+        "keyId": {
+          "type": "string",
+          "description": "Optional opaque key hint."
+        }
+      }
+    },
+    "authorKeys": {
+      "type": "string",
+      "format": "uri",
+      "description": "Optional key discovery URL. Readers MUST NOT require network to open; verify tooling only (e.g. rdoc verify --fetch-keys)."
     }
   }
 }

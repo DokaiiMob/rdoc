@@ -85,10 +85,12 @@ CLI: `rdoc sign <file> -k <pem> --detached` → writes `<file>.rdoc.sig`.
 ## 6. Verification procedure
 
 1. Extract manifest and article; fail if `contentHash` mismatch.
-2. If `signature` is absent → report `unsigned` (exit 0 for `rdoc verify --allow-unsigned`).
-3. Require `alg === "Ed25519"`, decode `publicKey` and `sig`.
-4. Verify Ed25519 over the 32-byte `contentHash` digest.
-5. Success only if both hash and signature verify.
+2. Resolve signature from embedded `manifest.signature`, else sidecar `<file>.rdoc.sig` (or `--sig`).
+3. If no signature → report `unsigned` (exit 0 for `rdoc verify --allow-unsigned`).
+4. Require `alg === "Ed25519"`, decode `publicKey` and `sig`.
+5. Optionally (`rdoc verify --fetch-keys`, default OFF): fetch `authorKeys` and require the public key to be listed.
+6. Verify Ed25519 over the 32-byte `contentHash` digest.
+7. Success only if both hash and signature verify.
 
 ## 7. Key material (reference CLI)
 
@@ -121,7 +123,6 @@ CLI: `rdoc sign <file> -k <pem> --detached` → writes `<file>.rdoc.sig`.
 
 ## 11. Future work
 
-- Detached `.rdoc.sig` for immutable mirrors
-- Optional `authorKeys` URL (never required to open)
 - Multi-signature / threshold schemes
+- Revocation lists / key rotation UX
 - Community review → Status: Accepted

@@ -13,6 +13,7 @@
     "dev": "tsc --watch",
     "rdoc": "node dist/cli.js",
     "test:conformance": "node tests/conformance/run.mjs",
+    "test:fuzz": "node tests/fuzz/sanitize-fuzz.mjs",
     "pack:dry": "npm pack --dry-run",
     "docker:build": "docker build -t ghcr.io/dokaiimob/rdoc:local .",
     "rdoc:bun": "bun dist/cli.js"

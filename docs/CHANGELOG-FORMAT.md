@@ -5,11 +5,12 @@ History of the Responsive Document (`.rdoc`) format dialect, as published in [RF
 ## 1.1.0 — 2026-09-20
 
 - Optional manifest fields: `profile`, `canonicalUrl`, `license`, `rights`, `themeAccent` (CSS color for `--accent`).
-- Optional `signature` object (Ed25519 over `contentHash`) — [RFC 0002](./rfc-0002-signatures.md) Draft; ignored by readers that do not implement it.
+- Optional `signature` object (Ed25519 over `contentHash`) and optional `authorKeys` URL — [RFC 0002](./rfc-0002-signatures.md) Draft; ignored by readers that do not implement it. Detached sidecars: `<file>.rdoc.sig`.
 - Version negotiation clarified: readers **MUST** ignore unknown manifest fields.
 - Annotations note: sidecar `.rdoc.ann.json` or embedded `application/rdoc-annotations+json` (minimal highlight schema). See [annotations.md](./annotations.md) and RFC §17.
 - Book / multi-article note: spine file `*.rdoc.book.json` (`format: "rdoc-book"`). See [book-profile.md](./book-profile.md) and RFC §18.
 - Status of RFC 0001 moved from Draft to Accepted (MVP community review complete; errata still accepted).
+- Security docs: [HARDENING.md](./HARDENING.md), [THREAT-MODEL.md](./THREAT-MODEL.md), [SRI-NOTES.md](./SRI-NOTES.md).
 
 ## 1.0.0 — 2026-09-20
 

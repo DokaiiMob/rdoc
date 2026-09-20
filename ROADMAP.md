@@ -221,10 +221,10 @@ Browser remains the canonical reader. Native shells exist so **bare `.rdoc`** op
 - [x] Key discovery: optional `authorKeys` URL + `rdoc verify --fetch-keys` (never required for reading)
 - [x] Detached signature files (`.rdoc.sig`) via `rdoc sign --detached`
 - [x] CSP report-only debug mode for authors (`rdoc build --csp-report`)
-- [ ] Hardening guide: opening untrusted `.rdoc` (file:// vs hosted)
-- [ ] Subresource integrity notes if ever hosting reader chrome separately (discouraged)
-- [ ] Fuzz tests for sanitizeArticleHtml
-- [ ] Threat model doc: XSS, tracking pixels, exfiltration via CSS, SVG scripts
+- [x] Hardening guide: opening untrusted `.rdoc` (file:// vs hosted) — [`docs/HARDENING.md`](docs/HARDENING.md)
+- [x] Subresource integrity notes if ever hosting reader chrome separately (discouraged) — [`docs/SRI-NOTES.md`](docs/SRI-NOTES.md)
+- [x] Fuzz tests for sanitizeArticleHtml (`npm run test:fuzz`)
+- [x] Threat model doc: XSS, tracking pixels, exfiltration via CSS, SVG scripts — [`docs/THREAT-MODEL.md`](docs/THREAT-MODEL.md)
 
 ---
 
