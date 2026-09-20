@@ -129,13 +129,13 @@ Contributions welcome — start with [good first issues](https://github.com/Doka
 
 ### DX
 
-- [ ] Watch mode: `rdoc build -w`
-- [ ] Config file `rdoc.config.json` (author defaults, lang, theme default)
-- [ ] Shell completions (bash/zsh/fish/powershell)
-- [ ] Bun / Deno compatibility notes or first-class runners
-- [ ] npm package publish `@rdoc/cli` (or `rdoc` name if available)
-- [ ] Homebrew / Scoop / winget formulas
-- [ ] Docker image `ghcr.io/.../rdoc` for CI converts
+- [x] Watch mode: `rdoc build -w`
+- [x] Config file `rdoc.config.json` (author defaults, lang, theme default)
+- [x] Shell completions (bash/zsh/fish/powershell)
+- [x] Bun / Deno compatibility notes or first-class runners
+- [x] npm package publish `@rdoc/cli` (or `rdoc` name if available) — docs in `docs/PUBLISHING.md`
+- [x] Homebrew / Scoop / winget formulas (stubs under `packaging/`)
+- [x] Docker image `ghcr.io/.../rdoc` for CI converts (`Dockerfile` + publish notes)
 
 ---
 
