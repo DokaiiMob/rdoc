@@ -40,9 +40,16 @@ export function mergeBuildOptions<T extends Record<string, unknown>>(
     canonicalUrl: config.canonicalUrl,
     license: config.license,
     rights: config.rights,
+    tags: config.tags,
     themeAccent: config.themeAccent,
+    assetsDir: config.assetsDir,
+    failOnExternal: config.failOnExternal,
+    highlight: config.highlight,
+    math: config.math,
+    diagrams: config.diagrams,
+    bibliography: config.bibliography,
     ...Object.fromEntries(
       Object.entries(opts).filter(([, v]) => v !== undefined && v !== null),
     ),
-  } as T & RdocConfig;
+  } as unknown as T & RdocConfig;
 }

@@ -122,17 +122,17 @@ Contributions welcome — start with [good first issues](https://github.com/Doka
 
 ### Core pipeline
 
-- [ ] Streaming build for very large notes (chunked image encode)
-- [ ] `--assets-dir` explicit asset root
-- [ ] `--fail-on-external` (default) / `--allow-data-images-only` documentation pass
-- [ ] Front-matter (YAML) → manifest title/author/tags
-- [ ] GFM task lists, footnotes polish, definition lists
-- [ ] Syntax highlighting offline (Prism/Shiki → inline CSS, no CDN)
-- [ ] Mermaid / Graphviz → **SVG at compile time** (no runtime JS diagram libs)
-- [ ] Math: KaTeX/MathJax → SVG/MathML offline pipeline
-- [ ] BibTeX / CSL citations → footnotes or end references
-- [ ] HTML input mode (`rdoc build page.html`) with readability optional
-- [ ] Diff mode: `rdoc diff a.rdoc b.rdoc` (manifest + hash + text)
+- [x] Streaming build for very large notes (chunked image encode)
+- [x] `--assets-dir` explicit asset root
+- [x] `--fail-on-external` (default) / `--allow-data-images-only` documentation pass
+- [x] Front-matter (YAML) → manifest title/author/tags
+- [x] GFM task lists, footnotes polish, definition lists
+- [x] Syntax highlighting offline (Prism/Shiki → inline CSS, no CDN)
+- [x] Mermaid / Graphviz → **SVG at compile time** (no runtime JS diagram libs) — optional `mmdc` / `dot`; skips with warning
+- [x] Math: KaTeX/MathJax → SVG/MathML offline pipeline — KaTeX HTML+MathML at compile time
+- [x] BibTeX / CSL citations → footnotes or end references — BibTeX subset + `[@key]` (not full CSL)
+- [x] HTML input mode (`rdoc build page.html`) with readability optional
+- [x] Diff mode: `rdoc diff a.rdoc b.rdoc` (manifest + hash + text)
 
 ### DX
 

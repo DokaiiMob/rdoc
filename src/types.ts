@@ -50,6 +50,8 @@ export interface RdocManifest {
   rights?: string;
   /** Optional CSS accent color (e.g. `#0b6e4f`); sets `--accent` in the reader. */
   themeAccent?: string;
+  /** Optional tags from front-matter or CLI. */
+  tags?: string[];
   /** Optional Ed25519 signature over contentHash (RFC 0002). */
   signature?: RdocSignature;
   /**
@@ -80,11 +82,33 @@ export interface BuildOptions {
   created?: string;
   /** Optional CSS accent color embedded in the manifest. */
   themeAccent?: string;
+  /** Optional tags (also from YAML front-matter). */
+  tags?: string[];
   /**
    * When true, emit dual CSP: enforcing production policy plus
    * Content-Security-Policy-Report-Only for author debugging.
    */
   cspReport?: boolean;
+  /**
+   * Directory used to resolve relative image paths.
+   * Defaults to the input file's directory.
+   */
+  assetsDir?: string;
+  /**
+   * Reject http(s) images (default true). data: and local paths allowed.
+   * Alias concept: --allow-data-images-only.
+   */
+  failOnExternal?: boolean;
+  /** Compile-time Prism highlighting (default true). */
+  highlight?: boolean;
+  /** Compile-time KaTeX math (default true). */
+  math?: boolean;
+  /** Attempt Mermaid/Graphviz → SVG (default true; skips with warning if tools missing). */
+  diagrams?: boolean;
+  /** Path to a .bib file for [@citekey] support. */
+  bibliography?: string;
+  /** HTML input: strip nav/footer chrome heuristically. */
+  readability?: boolean;
 }
 
 export interface InspectResult {
@@ -105,9 +129,16 @@ export interface RdocConfig {
   canonicalUrl?: string;
   license?: string;
   rights?: string;
+  tags?: string[];
   themeDefault?: "system" | "light" | "dark";
   themeAccent?: string;
   output?: string;
+  assetsDir?: string;
+  failOnExternal?: boolean;
+  highlight?: boolean;
+  math?: boolean;
+  diagrams?: boolean;
+  bibliography?: string;
 }
 
 export interface ValidateResult {

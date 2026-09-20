@@ -122,9 +122,10 @@ rdoc --help
 
 | Command | What it does |
 | --- | --- |
-| `rdoc build <in.md> -o <out>` | Markdown → `.rdoc` / `.rdoc.html`, inline local images as `data:` |
+| `rdoc build <in.md\|.html> -o <out>` | Markdown/HTML → `.rdoc` / `.rdoc.html`, inline local images as `data:` |
 | `rdoc inspect <file>` | Manifest, size, SHA-256, reading time |
 | `rdoc validate <file>` | Strict CI checks (hash, CSP, structure) |
+| `rdoc diff <a> <b>` | Compare manifests, `contentHash`, and plain-text line diff |
 | `rdoc serve <file> [-p port]` | Local HTTP preview |
 | `rdoc open <file>` | Open in browser (bare `.rdoc` → temp `.html`) |
 | `rdoc associate [--undo]` | Register / remove OS file association |
@@ -141,8 +142,23 @@ node dist/cli.js build article.md -o article.rdoc.html \
   --title "Title" \
   --author "Name" \
   --lang en \
-  --description "Short summary"
+  --description "Short summary" \
+  --tags "offline,demo" \
+  --assets-dir ./assets \
+  --allow-data-images-only \
+  --bibliography refs.bib
+
+# HTML input with basic chrome stripping
+node dist/cli.js build page.html -o page.rdoc.html --readability
+
+# Compare two documents
+node dist/cli.js diff a.rdoc.html b.rdoc.html
 ```
+
+`--fail-on-external` is **on by default** (rejects remote `http(s)` images; allows `data:` and local files).  
+`--allow-data-images-only` is an explicit alias for that policy. Use `--no-fail-on-external` only if you intentionally keep remote URLs (not recommended for offline `.rdoc`).
+
+Offline Prism highlighting and KaTeX math are **on by default** (`--no-highlight` / `--no-math` to disable). Mermaid/Graphviz compile to SVG when `mmdc` / `dot` are available; otherwise fences stay as code with a warning. Details: [`docs/COMPILER.md`](docs/COMPILER.md).
 
 </details>
 
