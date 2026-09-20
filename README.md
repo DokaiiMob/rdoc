@@ -53,6 +53,7 @@ Web pages reflow — until the CDN dies, the font kit 404s, or the tracker farm 
 - [Integrity & security](#-integrity--security)
 - [Obsidian plugin](#-obsidian-plugin)
 - [OS association](#-os-file-association)
+- [Native readers](#-native-readers-bare-rdoc)
 - [Project layout](#-project-layout)
 - [Contributing](#-contributing)
 - [License](#-license)
@@ -237,10 +238,27 @@ Manual helpers: [`assoc/`](assoc/)
 
 ---
 
+## 📱 Native readers (bare `.rdoc`)
+
+Open **`.rdoc`** without renaming to `.html` — WebView / Electron loads the file as `text/html`.
+
+| Reader | Path | Download |
+| --- | --- | --- |
+| Windows (portable) | [`apps/desktop-reader/`](apps/desktop-reader/) | [Release assets](https://github.com/DokaiiMob/rdoc/releases/tag/v0.2.0) |
+| Android (APK) | [`apps/android-reader/`](apps/android-reader/) | [Release assets](https://github.com/DokaiiMob/rdoc/releases/tag/v0.2.0) |
+
+Brand mark: [`apps/shared/branding/`](apps/shared/branding/)
+
+---
+
 ## 📁 Project layout
 
 ```
 rdoc/
+├── apps/
+│   ├── desktop-reader/   # Electron — bare .rdoc on PC
+│   ├── android-reader/   # Kotlin WebView — bare .rdoc on Android
+│   └── shared/branding/  # logo + icons
 ├── docs/                 # GitHub Pages + RFC 0001
 ├── site/                 # playground sources
 ├── assoc/                # OS registration scripts

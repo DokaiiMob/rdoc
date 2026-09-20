@@ -9,3 +9,11 @@ artifacts/
 *.log
 plugins/obsidian-rdoc/node_modules/
 plugins/obsidian-rdoc/src/assets.ts
+apps/desktop-reader/node_modules/
+apps/desktop-reader/dist-pack/
+apps/android-reader/.gradle/
+apps/android-reader/build/
+apps/android-reader/app/build/
+apps/android-reader/local.properties
+apps/android-reader/.idea/
+*.iml

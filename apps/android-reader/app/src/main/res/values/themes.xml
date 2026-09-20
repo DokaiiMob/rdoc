@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.RdocReader" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/brand_green</item>
+        <item name="colorPrimaryDark">#1A3D32</item>
+        <item name="colorAccent">@color/brand_green</item>
+    </style>
+</resources>

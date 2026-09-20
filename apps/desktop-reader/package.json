@@ -1,0 +1,48 @@
+{
+  "name": "rdoc-desktop-reader",
+  "version": "0.2.0",
+  "description": "Minimal Electron reader for bare .rdoc HTML polyglot files",
+  "main": "main.js",
+  "author": "DokaiiMob",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --win portable --x64",
+    "pack:dir": "electron-builder --win dir --x64"
+  },
+  "build": {
+    "appId": "com.rdoc.desktop-reader",
+    "productName": "rdoc Reader",
+    "directories": {
+      "output": "dist-pack"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json",
+      "icon.png",
+      "icon.ico"
+    ],
+    "icon": "icon.ico",
+    "win": {
+      "icon": "icon.ico",
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "rdoc-reader-${version}-win-x64.${ext}",
+      "signAndEditExecutable": false
+    },
+    "portable": {
+      "artifactName": "rdoc-reader-${version}-win-x64-portable.${ext}"
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8"
+  }
+}
