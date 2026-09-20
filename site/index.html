@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="no">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>rdoc — responsive offline documents</title>
   <meta name="description" content="Open format for self-contained, mobile-first offline documents. Drop Markdown, download .rdoc.html.">
+  <meta name="google" content="notranslate">
   <link rel="stylesheet" href="./landing.css">
 </head>
 <body>
@@ -20,38 +21,40 @@
 
   <main>
     <section class="hero">
-      <p class="brand-hero">rdoc</p>
-      <h1>PDFs were made for paper.<br>Your phone deserves better.</h1>
-      <p class="lede">One UTF-8 file. Reflows on mobile. Works offline. Opens in any browser — no reader app.</p>
-      <div class="cta">
-        <a class="btn primary" href="#try">Convert Markdown</a>
-        <a class="btn" href="./demo.rdoc.html">Open live demo</a>
+      <div class="hero-copy">
+        <p class="brand-hero">rdoc</p>
+        <h1>PDFs were made for paper.<br>Your phone deserves better.</h1>
+        <p class="lede">One UTF-8 file. Reflows on mobile. Works offline. Opens in any browser — no reader app.</p>
+        <div class="cta">
+          <a class="btn primary" href="#try">Convert Markdown</a>
+          <a class="btn" href="./demo.rdoc.html">Open live demo</a>
+        </div>
       </div>
-    </section>
 
-    <section class="compare-wrap" id="compare-section" aria-label="PDF vs rdoc">
-      <h2>Side by side</h2>
-      <p class="sub">Drag the handle. Left: fixed A4 pain. Right: responsive .rdoc.</p>
-      <div class="compare" id="compare" style="--pos: 50%">
-        <div class="pane rdoc-pane">
-          <div class="phone nice">
-            <p class="doc-title">Quarterly notes</p>
-            <p>Text reflows to a comfortable measure. No horizontal scroll. Dark mode and TOC travel with the file.</p>
-            <p class="ok-hint">open · read · done</p>
-          </div>
-          <span class="label">.rdoc</span>
-        </div>
-        <div class="pane pdf" aria-hidden="true">
-          <div class="phone">
-            <div class="pdf-sheet">
-              <p class="tiny">ANNUAL REPORT 2024 — CONFIDENTIAL</p>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris…</p>
-              <p class="zoom-hint">pinch · pan · zoom · repeat</p>
+      <div class="hero-visual" id="compare-section" aria-label="PDF vs rdoc">
+        <p class="compare-hint">Drag to compare · PDF pain vs .rdoc</p>
+        <div class="compare" id="compare" style="--pos: 48%">
+          <div class="pane rdoc-pane">
+            <div class="phone nice">
+              <p class="doc-title">Quarterly notes</p>
+              <p>Text reflows to a comfortable measure. No horizontal scroll. Dark mode and TOC travel with the file.</p>
+              <p class="ok-hint">open · read · done</p>
             </div>
+            <span class="label">.rdoc</span>
           </div>
-          <span class="label">PDF on mobile</span>
+          <div class="pane pdf" aria-hidden="true">
+            <div class="phone">
+              <div class="pdf-sheet">
+                <p class="tiny">ANNUAL REPORT 2024 — CONFIDENTIAL</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris…</p>
+                <p class="zoom-hint">pinch · pan · zoom · repeat</p>
+              </div>
+            </div>
+            <span class="label">PDF on mobile</span>
+          </div>
+          <div class="compare-handle" aria-hidden="true"></div>
+          <input id="compare-range" class="range" type="range" min="8" max="92" value="48" aria-label="Compare slider">
         </div>
-        <input id="compare-range" class="range" type="range" min="0" max="100" value="50" aria-label="Compare slider">
       </div>
     </section>
 
@@ -59,8 +62,9 @@
       <h2>Try in the browser</h2>
       <p class="sub">No npm install. Drop a <code>.md</code> file — get a self-contained <code>.rdoc.html</code>.</p>
       <div class="drop" id="drop" tabindex="0" role="button" aria-label="Drop Markdown file">
+        <span class="drop-icon" aria-hidden="true">↓</span>
         <strong>Drop Markdown here</strong>
-        <span>or click to choose a file</span>
+        <span>or click to choose a <code>.md</code> file</span>
       </div>
       <input id="file" type="file" accept=".md,text/markdown,text/plain" hidden>
       <div class="row">
